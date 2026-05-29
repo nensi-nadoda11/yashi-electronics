@@ -12,9 +12,6 @@ CREATE TABLE "Customer" (
     "mobile" TEXT,
     "passwordHash" TEXT NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
-    "resetPasswordTokenHash" TEXT,
-    "resetPasswordExpiresAt" TIMESTAMP(3),
-    "lastLoginAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 

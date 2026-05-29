@@ -1,0 +1,4 @@
+ALTER TABLE "Customer"
+ADD COLUMN IF NOT EXISTS "resetPasswordTokenHash" TEXT,
+ADD COLUMN IF NOT EXISTS "resetPasswordExpiresAt" TIMESTAMP(3),
+ADD COLUMN IF NOT EXISTS "lastLoginAt" TIMESTAMP(3);
