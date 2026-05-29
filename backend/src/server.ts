@@ -1,34 +1,11 @@
-import cookieParser from 'cookie-parser'
-import cors from 'cors'
-import dotenv from 'dotenv'
-import express from 'express'
-import helmet from 'helmet'
-import morgan from 'morgan'
+import { app } from './app'
+import { env } from './config/env'
 
-dotenv.config()
-
-const app = express()
-const port = Number(process.env.PORT ?? 4000)
-
-app.use(helmet())
-app.use(cors())
-app.use(express.json())
-app.use(cookieParser())
-app.use(morgan('dev'))
-
-const healthResponse = {
-  success: true,
-  message: 'Yashi Electronics API running',
-}
-
-app.get('/', (_request, response) => {
-  response.status(200).json(healthResponse)
+const server = app.listen(env.port, () => {
+  process.stdout.write(`Yashi Electronics API running on port ${env.port}\n`)
 })
 
-app.get('/health', (_request, response) => {
-  response.status(200).json(healthResponse)
-})
-
-app.listen(port, () => {
-  process.stdout.write(`Yashi Electronics API running on port ${port}\n`)
+server.on('error', (error) => {
+  process.stderr.write(`Failed to start server: ${error.message}\n`)
+  process.exit(1)
 })
