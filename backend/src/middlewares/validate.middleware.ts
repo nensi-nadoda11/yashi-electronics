@@ -9,6 +9,14 @@ type ValidationSchemas = {
   query?: ZodTypeAny
 }
 
+const assignParsedValues = <T extends object>(target: T, parsedValue: T) => {
+  Object.keys(target).forEach((key) => {
+    delete (target as Record<string, unknown>)[key]
+  })
+
+  Object.assign(target, parsedValue)
+}
+
 export const validate = (schemas: ValidationSchemas): RequestHandler => {
   return (request, _response, next) => {
     try {
@@ -17,11 +25,17 @@ export const validate = (schemas: ValidationSchemas): RequestHandler => {
       }
 
       if (schemas.params) {
-        request.params = schemas.params.parse(request.params) as typeof request.params
+        assignParsedValues(
+          request.params,
+          schemas.params.parse(request.params) as typeof request.params,
+        )
       }
 
       if (schemas.query) {
-        request.query = schemas.query.parse(request.query) as typeof request.query
+        assignParsedValues(
+          request.query,
+          schemas.query.parse(request.query) as typeof request.query,
+        )
       }
 
       next()

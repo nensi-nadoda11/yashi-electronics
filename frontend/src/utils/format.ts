@@ -6,4 +6,4 @@ export const formatCurrency = (value: number) =>
   }).format(value)
 
 export const calculateDiscountPercentage = (mrp: number, price: number) =>
-  Math.round(((mrp - price) / mrp) * 100)
+  mrp > 0 && mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0
