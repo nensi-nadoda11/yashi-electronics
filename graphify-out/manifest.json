@@ -1,0 +1,46 @@
+{
+  "E:\\yashi_electronics\\frontend\\eslint.config.js": {
+    "mtime": 1778734508.685026,
+    "hash": "0355276bc79439afe3c53e3a2470ca1e"
+  },
+  "E:\\yashi_electronics\\frontend\\vite.config.ts": {
+    "mtime": 1780035688.1484954,
+    "hash": "a545815e9774665a916fe473809fbd87"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\App.tsx": {
+    "mtime": 1778734508.8781474,
+    "hash": "c5e44a49ac2a44373fba5d1a7fe35be4"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\main.tsx": {
+    "mtime": 1778734508.8808765,
+    "hash": "787e5a07efeb2bf6209d5937195f2f68"
+  },
+  "E:\\yashi_electronics\\frontend\\index.html": {
+    "mtime": 1780035478.8904035,
+    "hash": "33bd262affcefea92f1509cda449a19c"
+  },
+  "E:\\yashi_electronics\\frontend\\README.md": {
+    "mtime": 1778734508.748614,
+    "hash": "f6e3faf55d738cf2affe1b44195f27cf"
+  },
+  "E:\\yashi_electronics\\frontend\\public\\favicon.svg": {
+    "mtime": 1778734508.8006384,
+    "hash": "7e840862161341271697daa99a40d76b"
+  },
+  "E:\\yashi_electronics\\frontend\\public\\icons.svg": {
+    "mtime": 1778734508.8192255,
+    "hash": "3b4fcfcf393eca4d264dca4a4663bc37"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\assets\\hero.png": {
+    "mtime": 1778734508.7738142,
+    "hash": "aead493361b27e7510691c5d7072dfc1"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\assets\\react.svg": {
+    "mtime": 1778734508.8338852,
+    "hash": "f0402b67b6ce880f65666bb49e841696"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\assets\\vite.svg": {
+    "mtime": 1778734508.852647,
+    "hash": "9960a24288958394ac50e57ff638b036"
+  }
+}
