@@ -1,18 +1,70 @@
 import { KeyRound, ShieldCheck } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { Container } from '../components/ui/Container'
 import { Input } from '../components/ui/Input'
 import { PageHeader } from '../components/ui/PageHeader'
+import { useAuth } from '../features/auth/useAuth'
+import { getApiErrorMessage } from '../lib/api-client'
+
+const getRedirectPath = (searchParams: URLSearchParams) => {
+  const redirectPath = searchParams.get('redirect')
+  return redirectPath && redirectPath.startsWith('/') ? redirectPath : '/profile'
+}
 
 export function LoginPage() {
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const { isAuthenticated, isLoading, login } = useAuth()
+  const [identifier, setIdentifier] = useState('')
+  const [password, setPassword] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const redirectPath = getRedirectPath(searchParams)
+
+  if (!isLoading && isAuthenticated) {
+    return <Navigate to={redirectPath} replace />
+  }
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setErrorMessage('')
+
+    if (!identifier.trim()) {
+      setErrorMessage('Email or mobile is required')
+      return
+    }
+
+    if (!password) {
+      setErrorMessage('Password is required')
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      await login({
+        identifier: identifier.trim(),
+        password,
+      })
+
+      navigate(redirectPath, { replace: true })
+    } catch (error) {
+      setErrorMessage(getApiErrorMessage(error))
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <>
       <PageHeader
         eyebrow="Customer Login"
         title="Sign in to access orders, wishlist, and profile details"
-        description="This form is ready for future authentication wiring without changing the visual structure."
+        description="Sign in with your email or mobile number to access your secure customer account."
       />
 
       <Container className="pb-16">
@@ -25,19 +77,45 @@ export function LoginPage() {
             <p className="mt-3 text-sm leading-7 text-slate-600">
               Log in to manage your saved items, review past orders, and continue toward a streamlined checkout.
             </p>
-            <form className="mt-8 space-y-5">
-              <Input id="login-email" type="email" label="Email Address" placeholder="you@example.com" />
-              <Input id="login-password" type="password" label="Password" placeholder="Enter your password" />
+            <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+              <Input
+                id="login-identifier"
+                label="Email or Mobile"
+                placeholder="you@example.com or 9876543210"
+                value={identifier}
+                onChange={(event) => setIdentifier(event.target.value)}
+                required
+              />
+              <Input
+                id="login-password"
+                type="password"
+                label="Password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                required
+              />
+              {errorMessage ? (
+                <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                  {errorMessage}
+                </div>
+              ) : null}
               <div className="flex items-center justify-between gap-3 text-sm">
-                <Link to="/register" className="font-medium text-brand-700 transition hover:text-brand-800">
+                <Link
+                  to={`/register?redirect=${encodeURIComponent(redirectPath)}`}
+                  className="font-medium text-brand-700 transition hover:text-brand-800"
+                >
                   Create account
                 </Link>
-                <button type="button" className="font-medium text-slate-500 transition hover:text-slate-900">
+                <Link
+                  to="/forgot-password"
+                  className="font-medium text-slate-500 transition hover:text-slate-900"
+                >
                   Forgot password?
-                </button>
+                </Link>
               </div>
-              <Button className="w-full" size="lg">
-                Login
+              <Button className="w-full" size="lg" type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Signing in...' : 'Login'}
               </Button>
             </form>
           </Card>
@@ -52,7 +130,7 @@ export function LoginPage() {
                   Built for a reliable customer account experience
                 </h3>
                 <p className="text-sm leading-7 text-slate-600">
-                  Future modules can plug in auth, secure sessions, order history, invoice downloads, and address books directly into this layout.
+                  Secure sessions, password recovery, and protected account access now plug into this layout without changing the customer-facing theme.
                 </p>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">

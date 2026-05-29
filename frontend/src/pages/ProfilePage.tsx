@@ -1,19 +1,47 @@
 import { FileText, LogOut, MapPinned, UserRound } from 'lucide-react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Badge } from '../components/ui/Badge'
 import { Card } from '../components/ui/Card'
 import { Container } from '../components/ui/Container'
 import { PageHeader } from '../components/ui/PageHeader'
 import { buttonStyles } from '../components/ui/button-styles'
-import { addresses, customerProfile, orders } from '../data/mock-data'
+import { useAuth } from '../features/auth/useAuth'
+import { addresses } from '../data/mock-data'
+
+const formatDate = (value?: string | null) => {
+  if (!value) {
+    return 'Not available yet'
+  }
+
+  return new Intl.DateTimeFormat('en-IN', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(new Date(value))
+}
 
 export function ProfilePage() {
+  const { customer, logout } = useAuth()
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
+
+    try {
+      await logout()
+    } finally {
+      setIsLoggingOut(false)
+    }
+  }
+
+  const memberSince = customer ? formatDate(customer.lastLoginAt ?? null) : 'Not available'
+
   return (
     <>
       <PageHeader
         eyebrow="Customer Profile"
         title="Manage account details and shopping preferences"
-        description="This profile dashboard is ready for future account editing, saved addresses, invoices, and security settings."
+        description="Review your registered customer details and stay ready for upcoming account, address, and order modules."
       />
 
       <Container className="grid gap-6 pb-16 lg:grid-cols-[0.95fr_1.05fr]">
@@ -24,30 +52,35 @@ export function ProfilePage() {
             </div>
             <div className="space-y-2">
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-brand-600">
-                Member since {customerProfile.memberSince}
+                Customer account
               </p>
-              <h2 className="text-3xl font-bold text-slate-950">{customerProfile.name}</h2>
-              <p className="text-sm text-slate-600">{customerProfile.email}</p>
-              <p className="text-sm text-slate-600">{customerProfile.phone}</p>
+              <h2 className="text-3xl font-bold text-slate-950">{customer?.fullName}</h2>
+              <p className="text-sm text-slate-600">{customer?.email}</p>
+              <p className="text-sm text-slate-600">{customer?.mobile ?? 'Mobile not added yet'}</p>
             </div>
           </div>
 
           <div className="mt-8 grid gap-4">
             <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
-              <p className="text-sm font-semibold text-slate-500">Company</p>
+              <p className="text-sm font-semibold text-slate-500">Account Status</p>
               <p className="mt-2 text-lg font-semibold text-slate-950">
-                {customerProfile.company}
+                {customer?.isActive ? 'Active' : 'Inactive'}
               </p>
             </div>
             <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
-              <p className="text-sm font-semibold text-slate-500">GSTIN Placeholder</p>
+              <p className="text-sm font-semibold text-slate-500">Last Login</p>
               <p className="mt-2 text-lg font-semibold text-slate-950">
-                {customerProfile.gstin}
+                {formatDate(customer?.lastLoginAt ?? null)}
               </p>
             </div>
-            <button type="button" className={`${buttonStyles('danger', 'md')} w-full`}>
+            <button
+              type="button"
+              className={`${buttonStyles('danger', 'md')} w-full`}
+              onClick={() => void handleLogout()}
+              disabled={isLoggingOut}
+            >
               <LogOut className="h-4 w-4" />
-              Logout
+              {isLoggingOut ? 'Logging out...' : 'Logout'}
             </button>
           </div>
         </Card>
@@ -60,10 +93,10 @@ export function ProfilePage() {
             </div>
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
               {[
-                { label: 'Primary Email', value: customerProfile.email },
-                { label: 'Mobile Number', value: customerProfile.phone },
-                { label: 'Preferred Billing', value: 'GST invoice ready placeholder' },
-                { label: 'Recent Order', value: orders[0]?.id ?? 'No orders yet' },
+                { label: 'Primary Email', value: customer?.email ?? '-' },
+                { label: 'Mobile Number', value: customer?.mobile ?? 'Not added yet' },
+                { label: 'Account State', value: customer?.isActive ? 'Active customer' : 'Inactive customer' },
+                { label: 'Recent Login', value: memberSince },
               ].map((item) => (
                 <div key={item.label} className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
                   <p className="text-sm font-semibold text-slate-500">{item.label}</p>
@@ -86,8 +119,7 @@ export function ProfilePage() {
                     {address.isDefault ? <Badge variant="brand">Default</Badge> : null}
                   </div>
                   <p className="mt-3 text-sm leading-6 text-slate-600">
-                    {address.name}, {address.line1}, {address.line2}, {address.city},{' '}
-                    {address.state} - {address.pincode}
+                    Future address management will appear here in Module 4. This placeholder preserves the account dashboard layout without introducing partial address CRUD yet.
                   </p>
                 </div>
               ))}

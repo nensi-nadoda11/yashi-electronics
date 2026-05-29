@@ -2,6 +2,7 @@ import { Heart, Menu, Search, ShoppingCart, User, X } from 'lucide-react'
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { cartItems, quickLinks, wishlistItems } from '../../data/mock-data'
+import { useAuth } from '../../features/auth/useAuth'
 import { cn } from '../../utils/cn'
 import { Container } from '../ui/Container'
 import { buttonStyles } from '../ui/button-styles'
@@ -18,6 +19,21 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { customer, isAuthenticated, logout } = useAuth()
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+  const firstName = customer?.fullName.trim().split(/\s+/)[0] ?? 'Profile'
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
+
+    try {
+      await logout()
+      setMobileOpen(false)
+    } finally {
+      setIsLoggingOut(false)
+    }
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/70 bg-white/85 backdrop-blur-xl">
@@ -73,16 +89,31 @@ export function Header() {
                 {cartItems.reduce((sum, item) => sum + item.quantity, 0)}
               </span>
             </NavLink>
-            <NavLink to="/login" className={buttonStyles('outline', 'sm')}>
-              Login
-            </NavLink>
-            <NavLink to="/register" className={buttonStyles('secondary', 'sm')}>
-              Register
-            </NavLink>
-            <NavLink to="/profile" className={buttonStyles('ghost', 'sm')}>
-              <User className="h-4 w-4" />
-              Profile
-            </NavLink>
+            {isAuthenticated ? (
+              <>
+                <NavLink to="/profile" className={buttonStyles('ghost', 'sm')}>
+                  <User className="h-4 w-4" />
+                  {firstName}
+                </NavLink>
+                <button
+                  type="button"
+                  className={buttonStyles('outline', 'sm')}
+                  onClick={() => void handleLogout()}
+                  disabled={isLoggingOut}
+                >
+                  {isLoggingOut ? 'Logging out...' : 'Logout'}
+                </button>
+              </>
+            ) : (
+              <>
+                <NavLink to="/login" className={buttonStyles('outline', 'sm')}>
+                  Login
+                </NavLink>
+                <NavLink to="/register" className={buttonStyles('secondary', 'sm')}>
+                  Register
+                </NavLink>
+              </>
+            )}
           </div>
 
           <button
@@ -132,28 +163,43 @@ export function Header() {
                 ))}
               </nav>
               <div className="grid gap-2 sm:grid-cols-2">
-                <Link
-                  to="/login"
-                  className={buttonStyles('outline', 'md')}
-                  onClick={() => setMobileOpen(false)}
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/register"
-                  className={buttonStyles('secondary', 'md')}
-                  onClick={() => setMobileOpen(false)}
-                >
-                  Register
-                </Link>
-                <Link
-                  to="/profile"
-                  className={buttonStyles('ghost', 'md')}
-                  onClick={() => setMobileOpen(false)}
-                >
-                  <User className="h-4 w-4" />
-                  Profile
-                </Link>
+                {isAuthenticated ? (
+                  <>
+                    <Link
+                      to="/profile"
+                      className={buttonStyles('ghost', 'md')}
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      <User className="h-4 w-4" />
+                      {firstName}
+                    </Link>
+                    <button
+                      type="button"
+                      className={buttonStyles('outline', 'md')}
+                      onClick={() => void handleLogout()}
+                      disabled={isLoggingOut}
+                    >
+                      {isLoggingOut ? 'Logging out...' : 'Logout'}
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      to="/login"
+                      className={buttonStyles('outline', 'md')}
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      to="/register"
+                      className={buttonStyles('secondary', 'md')}
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      Register
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
