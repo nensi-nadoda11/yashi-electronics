@@ -1,5 +1,6 @@
 import { Prisma } from '@prisma/client'
 import { prisma } from '../../db/prisma'
+import { getCategoryFilterSlugs } from './catalog-navigation'
 import type { ProductFilters, ProductSortOption } from './product.types'
 
 type ProductListRow = {
@@ -56,7 +57,8 @@ const buildWhereSql = (filters: ProductFilters) => {
   }
 
   if (filters.category) {
-    whereClauses.push(Prisma.sql`c."slug" = ${filters.category}`)
+    const categorySlugs = getCategoryFilterSlugs(filters.category)
+    whereClauses.push(Prisma.sql`c."slug" IN (${Prisma.join(categorySlugs)})`)
   }
 
   if (filters.brandSlugs.length > 0) {

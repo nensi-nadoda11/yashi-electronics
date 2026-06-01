@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import { catalogNavigation } from '../src/modules/catalog/catalog-navigation'
 
 const prisma = new PrismaClient()
 
@@ -32,58 +33,13 @@ type ProductSeed = {
   specifications: Array<{ name: string; value: string }>
 }
 
-const categories: CategorySeed[] = [
-  {
-    name: 'Basic Electronic Components',
-    slug: 'basic-electronic-components',
-    description: 'Core passive and discrete components used in day-to-day circuit design and repair.',
-  },
-  {
-    name: 'Integrated Circuits',
-    slug: 'integrated-circuits',
-    description: 'Timer ICs, logic ICs, controllers, and supporting integrated semiconductors.',
-  },
-  {
-    name: 'Power Supply Components',
-    slug: 'power-supply-components',
-    description: 'Power conversion, backup, and regulation components for electronics systems.',
-  },
-  {
-    name: 'Display Components',
-    slug: 'display-components',
-    description: 'Panels, modules, and interactive display parts for embedded and consumer builds.',
-  },
-  {
-    name: 'Sensors',
-    slug: 'sensors',
-    description: 'Detection and measurement sensors for automation, robotics, and smart projects.',
-  },
-  {
-    name: 'Connectors & Wiring',
-    slug: 'connectors-and-wiring',
-    description: 'Connectivity essentials for assembly, prototyping, and durable field wiring.',
-  },
-  {
-    name: 'Audio Components',
-    slug: 'audio-components',
-    description: 'Modules and transducers used in audio playback, capture, and alerts.',
-  },
-  {
-    name: 'Communication Modules',
-    slug: 'communication-modules',
-    description: 'Wireless and network-ready modules for connected electronics applications.',
-  },
-  {
-    name: 'Computer and PCB Components',
-    slug: 'computer-and-pcb-components',
-    description: 'Fabrication, prototyping, cooling, and assembly parts for PCB and system builds.',
-  },
-  {
-    name: 'Industrial Electronics Components',
-    slug: 'industrial-electronics-components',
-    description: 'Industrial-grade control, drive, and protection hardware for automation systems.',
-  },
-]
+const categories: CategorySeed[] = catalogNavigation.flatMap((mainCategory) =>
+  mainCategory.children.map((childCategory) => ({
+    name: childCategory.name,
+    slug: childCategory.slug,
+    description: `Products and accessories for ${childCategory.name.toLowerCase()}.`,
+  })),
+)
 
 const brands: BrandSeed[] = [
   { name: 'Yashi', slug: 'yashi', description: 'In-house curated catalogue brand for dependable electronics supply.' },
@@ -104,6 +60,52 @@ const placeholderImageUrl = (productName: string, imageIndex: number) => {
   const text = encodeURIComponent(`${productName} ${imageIndex}`)
   return `https://placehold.co/900x900/e2e8f0/0f172a/png?text=${text}`
 }
+
+const productCategorySlugOverrides: Record<string, string> = {
+  'carbon-film-resistor-kit-1-4w': 'resistor',
+  'electrolytic-capacitor-assortment-pack': 'capacitor',
+  'general-purpose-diode-1n4007-pack': 'diode',
+  '12v-miniature-relay-module': 'relay',
+  'ne555-timer-ic-dip-8': 'timer-ic',
+  'lm358-dual-op-amp-ic': 'op-amp-ic',
+  'atmega328p-microcontroller': 'microcontroller',
+  '7805-voltage-regulator-ic': 'voltage-regulator-ic',
+  '12v-7ah-sealed-lead-acid-battery': 'battery',
+  '24v-5a-smps-power-supply': 'smps-switch-mode-power-supply',
+  '12v-2a-dc-adapter': 'adapter',
+  'bridge-rectifier-10a-module': 'rectifier',
+  '16x2-lcd-display-module': 'lcd-display',
+  '0-96-inch-oled-display-i2c': 'oled-display',
+  'four-digit-seven-segment-display': 'seven-segment-display',
+  '5-inch-capacitive-touch-screen': 'touch-screen',
+  'ds18b20-waterproof-temperature-sensor': 'temperature-sensor',
+  'pir-motion-sensor-module': 'motion-sensor',
+  'hc-sr04-ultrasonic-sensor': 'ultrasonic-sensor',
+  'mq-2-gas-sensor-module': 'gas-sensor',
+  'usb-type-c-female-breakout-connector': 'usb-connector',
+  'hdmi-panel-mount-connector': 'hdmi-connector',
+  '5-pin-terminal-block-connector': 'terminal-block',
+  '40-pin-male-to-female-jumper-wire-set': 'jumper-wire',
+  '8-ohm-5w-mini-speaker': 'speaker',
+  'electret-condenser-microphone-module': 'microphone',
+  '5v-active-buzzer-module': 'buzzer',
+  'pam8403-stereo-amplifier-module': 'amplifier-module',
+  'esp8266-wi-fi-module': 'wi-fi-module',
+  'hc-05-bluetooth-module': 'bluetooth-module',
+  'sim800l-gsm-module': 'gsm-module',
+  'neo-6m-gps-module': 'gps-module',
+  'double-sided-printed-circuit-board-sheet': 'printed-circuit-board-pcb',
+  '830-point-solderless-breadboard': 'breadboard',
+  'aluminium-heat-sink-for-to-220': 'heat-sink',
+  '60mm-dc-cooling-fan-12v': 'cooling-fan',
+  'compact-plc-controller-14-io': 'plc',
+  '7-inch-hmi-display-panel': 'hmi-display',
+  '3-pole-contactor-32a': 'contactor',
+  'miniature-circuit-breaker-16a': 'circuit-breaker',
+}
+
+const getSeedCategorySlug = (product: ProductSeed) =>
+  productCategorySlugOverrides[product.slug] ?? product.categorySlug
 
 const products: ProductSeed[] = [
   {
@@ -977,7 +979,7 @@ const seedCatalog = async () => {
       where: { slug: product.slug },
       update: {
         category: {
-          connect: { slug: product.categorySlug },
+          connect: { slug: getSeedCategorySlug(product) },
         },
         brand: product.brandSlug
           ? {
@@ -1008,7 +1010,7 @@ const seedCatalog = async () => {
       },
       create: {
         category: {
-          connect: { slug: product.categorySlug },
+          connect: { slug: getSeedCategorySlug(product) },
         },
         brand: product.brandSlug
           ? {

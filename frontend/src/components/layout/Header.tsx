@@ -1,10 +1,12 @@
-import { Heart, Menu, Search, ShoppingCart, User, X } from 'lucide-react'
+import { ChevronRight, Heart, Menu, Search, ShoppingCart, User, X } from 'lucide-react'
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { useAuth } from '../../features/auth/useAuth'
 import { useCart } from '../../features/cart/useCart'
 import { useWishlist } from '../../features/wishlist/useWishlist'
+import { catalogNavigation } from '../../data/catalog-navigation'
 import { cn } from '../../utils/cn'
+import { CategoryNavigationBar } from './CategoryNavigationBar'
 import { Container } from '../ui/Container'
 import { buttonStyles } from '../ui/button-styles'
 import { quickLinks } from '../../data/mock-data'
@@ -135,6 +137,8 @@ export function Header() {
           </button>
         </div>
 
+        <CategoryNavigationBar />
+
         <div
           className={cn(
             'grid overflow-hidden transition-all duration-300 lg:hidden',
@@ -172,6 +176,45 @@ export function Header() {
                   </NavLink>
                 ))}
               </nav>
+
+              <div className="space-y-3 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+                  Shop by category
+                </p>
+                <div className="grid gap-2">
+                  {catalogNavigation.map((mainCategory) => (
+                    <details
+                      key={mainCategory.slug}
+                      className="group rounded-2xl border border-slate-200 bg-white p-3 shadow-sm"
+                    >
+                      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-slate-700 [&::-webkit-details-marker]:hidden">
+                        <span>{mainCategory.name}</span>
+                        <ChevronRight className="h-4 w-4 shrink-0 transition group-open:rotate-90" />
+                      </summary>
+                      <div className="mt-3 grid gap-2 border-t border-slate-100 pt-3">
+                        <Link
+                          to={`/products?category=${encodeURIComponent(mainCategory.slug)}`}
+                          className="rounded-xl bg-slate-50 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-brand-50 hover:text-brand-700"
+                          onClick={() => setMobileOpen(false)}
+                        >
+                          View all {mainCategory.name}
+                        </Link>
+                        {mainCategory.children.map((subCategory) => (
+                          <Link
+                            key={subCategory.slug}
+                            to={`/products?category=${encodeURIComponent(subCategory.slug)}`}
+                            className="rounded-xl px-3 py-2 text-sm text-slate-600 transition hover:bg-slate-50 hover:text-slate-950"
+                            onClick={() => setMobileOpen(false)}
+                          >
+                            {subCategory.name}
+                          </Link>
+                        ))}
+                      </div>
+                    </details>
+                  ))}
+                </div>
+              </div>
+
               <div className="grid gap-2 sm:grid-cols-2">
                 {isAuthenticated ? (
                   <>

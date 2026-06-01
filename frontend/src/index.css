@@ -76,4 +76,26 @@
   .delay-1 {
     animation-delay: 0.12s;
   }
+
+  .scrollbar-light {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+  }
+
+  .scrollbar-light::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .scrollbar-light::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-light::-webkit-scrollbar-thumb {
+    background-color: rgba(148, 163, 184, 0.45);
+    border-radius: 9999px;
+  }
+
+  .scrollbar-light::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(148, 163, 184, 0.65);
+  }
 }

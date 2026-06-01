@@ -1,4 +1,4 @@
-import { Funnel, Search, SlidersHorizontal, X } from 'lucide-react'
+import { ChevronDown, Search, SlidersHorizontal, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { ProductCard } from '../components/product/ProductCard'
@@ -9,14 +9,13 @@ import { EmptyState } from '../components/ui/EmptyState'
 import { ErrorState } from '../components/ui/ErrorState'
 import { Input } from '../components/ui/Input'
 import { LoadingState } from '../components/ui/LoadingState'
-import { PageHeader } from '../components/ui/PageHeader'
 import { buttonStyles } from '../components/ui/button-styles'
-import { getBrands, getCategories, getProducts } from '../features/catalog/catalog.api'
+import { getBrands, getProducts } from '../features/catalog/catalog.api'
 import { useAuth } from '../features/auth/useAuth'
 import { useWishlist } from '../features/wishlist/useWishlist'
+import { getCatalogCategoryLabel } from '../data/catalog-navigation'
 import type {
   Brand,
-  Category,
   ProductListItem,
   ProductsQueryParams,
   SortOption,
@@ -24,146 +23,162 @@ import type {
 import { getApiErrorMessage } from '../lib/api-client'
 
 function FilterPanel({
-  categories,
   brands,
-  selectedCategory,
   selectedBrand,
   selectedStock,
   minPrice,
   maxPrice,
-  onCategoryChange,
   onBrandChange,
   onStockChange,
   onMinPriceChange,
   onMaxPriceChange,
   onClearFilters,
 }: {
-  categories: Category[]
   brands: Brand[]
-  selectedCategory: string
   selectedBrand: string
   selectedStock: string
   minPrice: string
   maxPrice: string
-  onCategoryChange: (value: string) => void
   onBrandChange: (value: string) => void
   onStockChange: (value: string) => void
   onMinPriceChange: (value: string) => void
   onMaxPriceChange: (value: string) => void
   onClearFilters: () => void
 }) {
+  const [isBrandsOpen, setIsBrandsOpen] = useState(false)
+  const [isPriceOpen, setIsPriceOpen] = useState(false)
+  const [isStockOpen, setIsStockOpen] = useState(false)
+
   return (
     <div className="space-y-6">
       <div className="space-y-3">
-        <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
-          <Funnel className="h-4 w-4 text-brand-600" />
-          Filter by category
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => onCategoryChange('')}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-              selectedCategory === ''
-                ? 'bg-slate-950 text-white'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-            }`}
-          >
-            All
-          </button>
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              type="button"
-              onClick={() => onCategoryChange(category.slug)}
-              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-                selectedCategory === category.slug
-                  ? 'bg-slate-950 text-white'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-              }`}
-            >
-              {category.name}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        <div className="text-sm font-semibold text-slate-700">Brands</div>
-        <div className="grid gap-2">
-          <button
-            type="button"
-            onClick={() => onBrandChange('')}
-            className={`rounded-2xl border px-4 py-3 text-left text-sm font-medium transition ${
-              selectedBrand === ''
-                ? 'border-brand-200 bg-brand-50 text-brand-700'
-                : 'border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50'
-            }`}
-          >
-            All brands
-          </button>
-          {brands.map((brand) => (
-            <button
-              key={brand.id}
-              type="button"
-              onClick={() => onBrandChange(brand.slug)}
-              className={`rounded-2xl border px-4 py-3 text-left text-sm font-medium transition ${
-                selectedBrand === brand.slug
-                  ? 'border-brand-200 bg-brand-50 text-brand-700'
-                  : 'border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50'
-              }`}
-            >
-              <div className="flex items-center justify-between gap-3">
-                <span>{brand.name}</span>
-                <span className="text-xs text-slate-400">{brand.productCount}</span>
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        <div className="text-sm font-semibold text-slate-700">Price range</div>
-        <div className="grid gap-3 rounded-3xl border border-slate-200 bg-slate-50 p-4">
-          <Input
-            type="number"
-            min="0"
-            placeholder="Minimum price"
-            value={minPrice}
-            onChange={(event) => onMinPriceChange(event.target.value)}
+        <button
+          type="button"
+          onClick={() => setIsBrandsOpen((value) => !value)}
+          className="flex w-full items-center justify-between text-sm font-semibold text-slate-700 transition hover:text-slate-950"
+        >
+          <span>Brands</span>
+          <ChevronDown
+            className={`h-4 w-4 transition ${isBrandsOpen ? 'rotate-180' : 'rotate-0'}`}
           />
-          <Input
-            type="number"
-            min="0"
-            placeholder="Maximum price"
-            value={maxPrice}
-            onChange={(event) => onMaxPriceChange(event.target.value)}
-          />
+        </button>
+
+        <div
+          className={`grid overflow-hidden transition-all duration-300 ${
+            isBrandsOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+          }`}
+        >
+          <div className="min-h-0">
+            <div className="grid gap-1 pt-2">
+              <button
+                type="button"
+                onClick={() => onBrandChange('')}
+                className={`rounded-md px-2 py-1.5 text-left text-sm font-medium transition ${
+                  selectedBrand === ''
+                    ? 'bg-brand-50 text-brand-700'
+                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-950'
+                }`}
+              >
+                All brands
+              </button>
+              {brands.map((brand) => (
+                <button
+                  key={brand.id}
+                  type="button"
+                  onClick={() => onBrandChange(brand.slug)}
+                  className={`rounded-md px-2 py-1.5 text-left text-sm font-medium transition ${
+                    selectedBrand === brand.slug
+                      ? 'bg-brand-50 text-brand-700'
+                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-950'
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <span>{brand.name}</span>
+                    <span className="text-[11px] text-slate-400">{brand.productCount}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
       <div className="space-y-3">
-        <div className="text-sm font-semibold text-slate-700">Stock status</div>
-        <div className="grid gap-2">
-          {[
-            { label: 'All stock', value: '' },
-            { label: 'In stock', value: 'in_stock' },
-            { label: 'Low stock', value: 'low_stock' },
-            { label: 'Out of stock', value: 'out_of_stock' },
-          ].map((option) => (
-            <button
-              key={option.label}
-              type="button"
-              onClick={() => onStockChange(option.value)}
-              className={`rounded-2xl border px-4 py-3 text-left text-sm font-medium transition ${
-                selectedStock === option.value
-                  ? 'border-brand-200 bg-brand-50 text-brand-700'
-                  : 'border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50'
-              }`}
-            >
-              {option.label}
-            </button>
-          ))}
+        <button
+          type="button"
+          onClick={() => setIsPriceOpen((value) => !value)}
+          className="flex w-full items-center justify-between text-sm font-semibold text-slate-700 transition hover:text-slate-950"
+        >
+          <span>Price range</span>
+          <ChevronDown
+            className={`h-4 w-4 transition ${isPriceOpen ? 'rotate-180' : 'rotate-0'}`}
+          />
+        </button>
+        <div
+          className={`grid overflow-hidden transition-all duration-300 ${
+            isPriceOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+          }`}
+        >
+          <div className="min-h-0">
+            <div className="grid gap-3 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+              <Input
+                type="number"
+                min="0"
+                placeholder="Minimum price"
+                value={minPrice}
+                onChange={(event) => onMinPriceChange(event.target.value)}
+              />
+              <Input
+                type="number"
+                min="0"
+                placeholder="Maximum price"
+                value={maxPrice}
+                onChange={(event) => onMaxPriceChange(event.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <button
+          type="button"
+          onClick={() => setIsStockOpen((value) => !value)}
+          className="flex w-full items-center justify-between text-sm font-semibold text-slate-700 transition hover:text-slate-950"
+        >
+          <span>Stock status</span>
+          <ChevronDown
+            className={`h-4 w-4 transition ${isStockOpen ? 'rotate-180' : 'rotate-0'}`}
+          />
+        </button>
+        <div
+          className={`grid overflow-hidden transition-all duration-300 ${
+            isStockOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+          }`}
+        >
+          <div className="min-h-0">
+            <div className="grid gap-2 pt-2">
+              {[
+                { label: 'All stock', value: '' },
+                { label: 'In stock', value: 'in_stock' },
+                { label: 'Low stock', value: 'low_stock' },
+                { label: 'Out of stock', value: 'out_of_stock' },
+              ].map((option) => (
+                <button
+                  key={option.label}
+                  type="button"
+                  onClick={() => onStockChange(option.value)}
+                  className={`rounded-2xl border px-4 py-3 text-left text-sm font-medium transition ${
+                    selectedStock === option.value
+                      ? 'border-brand-200 bg-brand-50 text-brand-700'
+                      : 'border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50'
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -247,7 +262,6 @@ export function ProductsPage() {
   const { refreshWishlistStatus } = useWishlist()
   const query = useMemo(() => buildProductsQuery(searchParams), [searchParams])
   const [searchInput, setSearchInput] = useState(query.search ?? '')
-  const [categories, setCategories] = useState<Category[]>([])
   const [brands, setBrands] = useState<Brand[]>([])
   const [products, setProducts] = useState<ProductListItem[]>([])
   const [totalPages, setTotalPages] = useState(1)
@@ -268,23 +282,18 @@ export function ProductsPage() {
       setIsMetaLoading(true)
 
       try {
-        const [categoriesResponse, brandsResponse] = await Promise.all([
-          getCategories(),
-          getBrands(),
-        ])
+        const brandsResponse = await getBrands()
 
         if (!isMounted) {
           return
         }
 
-        setCategories(categoriesResponse)
         setBrands(brandsResponse)
       } catch {
         if (!isMounted) {
           return
         }
 
-        setCategories([])
         setBrands([])
       } finally {
         if (isMounted) {
@@ -349,9 +358,10 @@ export function ProductsPage() {
   }, [isAuthenticated, products, refreshWishlistStatus])
 
   const activeCategoryName =
-    categories.find((category) => category.slug === query.category)?.name ?? 'All'
+    getCatalogCategoryLabel(query.category) ?? 'All'
   const activeBrandName =
     brands.find((brand) => brand.slug === query.brand)?.name ?? 'All'
+  const pageTitle = activeCategoryName === 'All' ? 'Products' : activeCategoryName
 
   const paginationButtons = useMemo(() => {
     const buttons = new Set<number>([1, totalPages, query.page ?? 1])
@@ -398,16 +408,11 @@ export function ProductsPage() {
 
   const filterPanel = (
     <FilterPanel
-      categories={categories}
       brands={brands}
-      selectedCategory={query.category ?? ''}
       selectedBrand={query.brand ?? ''}
       selectedStock={query.stock ?? ''}
       minPrice={searchParams.get('minPrice') ?? ''}
       maxPrice={searchParams.get('maxPrice') ?? ''}
-      onCategoryChange={(value) => {
-        setSearchParams(updateSearchParams(searchParams, { category: value || undefined }, true))
-      }}
       onBrandChange={(value) => {
         setSearchParams(updateSearchParams(searchParams, { brand: value || undefined }, true))
       }}
@@ -426,23 +431,23 @@ export function ProductsPage() {
 
   return (
     <>
-      <PageHeader
-        eyebrow="Product Catalog"
-        title="Browse electronics"
-        description="Search, sort, and filter the catalogue."
-        actions={
+      <Container className="pb-10 pt-4">
+        <div className="mb-4">
+          <h1 className="text-2xl font-extrabold tracking-tight text-slate-950 sm:text-3xl">
+            {pageTitle}
+          </h1>
+        </div>
+
+        <div className="mb-4 flex justify-end lg:hidden">
           <button
             type="button"
-            className={`${buttonStyles('outline', 'md')} lg:hidden`}
+            className={buttonStyles('outline', 'md')}
             onClick={() => setIsFilterOpen((value) => !value)}
           >
             <SlidersHorizontal className="h-4 w-4" />
             Filters
           </button>
-        }
-      />
-
-      <Container className="pb-16">
+        </div>
         <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
           <Card className="hidden h-fit p-6 lg:block">
             {isMetaLoading ? (
