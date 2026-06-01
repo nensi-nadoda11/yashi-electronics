@@ -1,3 +1,4 @@
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { catalogNavigation } from '../../data/catalog-navigation'
@@ -43,7 +44,14 @@ export function CategoryNavigationBar() {
       }}
     >
       <div className="rounded-[28px] border border-slate-200 bg-white/95 px-4 py-2.5 shadow-sm shadow-slate-950/5">
-        <div className="scrollbar-light flex items-center gap-2 overflow-x-auto pb-0.5">
+        <div className="relative">
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 flex items-center bg-gradient-to-r from-white via-white/95 to-transparent pr-4">
+            <ChevronLeft className="h-4 w-4 text-slate-300" />
+          </div>
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 flex items-center bg-gradient-to-l from-white via-white/95 to-transparent pl-4 text-slate-400">
+            <ChevronRight className="h-4 w-4" />
+          </div>
+          <div className="scrollbar-hidden flex items-center gap-2 overflow-x-auto px-6 pb-0.5">
           {catalogNavigation.map((category) => {
             const isActive = activeMainSlug === category.slug
 
@@ -65,6 +73,7 @@ export function CategoryNavigationBar() {
               </button>
             )
           })}
+          </div>
         </div>
       </div>
 

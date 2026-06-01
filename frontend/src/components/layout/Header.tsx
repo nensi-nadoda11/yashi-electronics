@@ -1,4 +1,4 @@
-import { ChevronRight, Heart, Menu, Search, ShoppingCart, User, X } from 'lucide-react'
+import { ChevronRight, Heart, LogOut, Menu, Search, ShoppingCart, User, X } from 'lucide-react'
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { useAuth } from '../../features/auth/useAuth'
@@ -11,8 +11,9 @@ import { Container } from '../ui/Container'
 import { buttonStyles } from '../ui/button-styles'
 import { quickLinks } from '../../data/mock-data'
 
-const navLinks = quickLinks.filter((link) =>
-  ['Home', 'Products', 'Wishlist', 'Cart', 'Orders'].includes(link.label),
+const primaryNavLinks = quickLinks.filter((link) => ['Home', 'Products'].includes(link.label))
+const authenticatedUtilityLinks = quickLinks.filter((link) =>
+  ['Wishlist', 'Cart', 'Orders'].includes(link.label),
 )
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
@@ -27,6 +28,9 @@ export function Header() {
   const { count: cartCount } = useCart()
   const { count } = useWishlist()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const mobileNavLinks = isAuthenticated
+    ? [...primaryNavLinks, ...authenticatedUtilityLinks]
+    : primaryNavLinks
 
   const firstName = customer?.fullName.trim().split(/\s+/)[0] ?? 'Profile'
 
@@ -62,7 +66,7 @@ export function Header() {
           </Link>
 
           <nav className="hidden items-center gap-5 lg:flex">
-            {navLinks.map((link) => (
+            {primaryNavLinks.map((link) => (
               <NavLink key={link.label} to={link.href} className={navLinkClass} end={link.href === '/'}>
                 {link.label}
               </NavLink>
@@ -82,26 +86,25 @@ export function Header() {
           </div>
 
           <div className="ml-auto hidden items-center gap-2 lg:flex">
-            <NavLink to="/wishlist" className={buttonStyles('ghost', 'sm')}>
-              <Heart className="h-4 w-4" />
-              Wishlist
-              {isAuthenticated ? (
-                <span className="rounded-full bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-700">
-                  {count}
-                </span>
-              ) : null}
-            </NavLink>
-            <NavLink to="/cart" className={buttonStyles('ghost', 'sm')}>
-              <ShoppingCart className="h-4 w-4" />
-              Cart
-              {isAuthenticated ? (
-                <span className="rounded-full bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-700">
-                  {cartCount}
-                </span>
-              ) : null}
-            </NavLink>
             {isAuthenticated ? (
               <>
+                <NavLink to="/wishlist" className={buttonStyles('ghost', 'sm')}>
+                  <Heart className="h-4 w-4" />
+                  Wishlist
+                  <span className="rounded-full bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-700">
+                    {count}
+                  </span>
+                </NavLink>
+                <NavLink to="/cart" className={buttonStyles('ghost', 'sm')}>
+                  <ShoppingCart className="h-4 w-4" />
+                  Cart
+                  <span className="rounded-full bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-700">
+                    {cartCount}
+                  </span>
+                </NavLink>
+                <NavLink to="/orders" className={buttonStyles('ghost', 'sm')}>
+                  Orders
+                </NavLink>
                 <NavLink to="/profile" className={buttonStyles('ghost', 'sm')}>
                   <User className="h-4 w-4" />
                   {firstName}
@@ -112,6 +115,7 @@ export function Header() {
                   onClick={() => void handleLogout()}
                   disabled={isLoggingOut}
                 >
+                  <LogOut className="h-4 w-4" />
                   {isLoggingOut ? 'Logging out...' : 'Logout'}
                 </button>
               </>
@@ -157,7 +161,7 @@ export function Header() {
                 />
               </label>
               <nav className="grid gap-2">
-                {navLinks.map((link) => (
+                {mobileNavLinks.map((link) => (
                   <NavLink
                     key={link.label}
                     to={link.href}
@@ -232,6 +236,7 @@ export function Header() {
                       onClick={() => void handleLogout()}
                       disabled={isLoggingOut}
                     >
+                      <LogOut className="h-4 w-4" />
                       {isLoggingOut ? 'Logging out...' : 'Logout'}
                     </button>
                   </>
