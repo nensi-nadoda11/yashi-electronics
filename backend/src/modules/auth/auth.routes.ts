@@ -6,6 +6,7 @@ import {
   logoutCustomerController,
   registerCustomerController,
   resetPasswordController,
+  sendRegistrationOtpController,
 } from './auth.controller'
 import { requireCustomerAuth } from './auth.middleware'
 import {
@@ -13,11 +14,13 @@ import {
   loginCustomerSchema,
   registerCustomerSchema,
   resetPasswordSchema,
+  sendRegistrationOtpSchema,
 } from './auth.schemas'
 import { validate } from '../../middlewares/validate.middleware'
 
 export const authRouter = Router()
 
+authRouter.post('/register/send-otp', validate({ body: sendRegistrationOtpSchema }), sendRegistrationOtpController)
 authRouter.post('/register', validate({ body: registerCustomerSchema }), registerCustomerController)
 authRouter.post('/login', validate({ body: loginCustomerSchema }), loginCustomerController)
 authRouter.post('/logout', logoutCustomerController)

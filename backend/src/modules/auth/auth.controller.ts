@@ -2,6 +2,16 @@ import type { RequestHandler } from 'express'
 import { authService, clearAuthCookie, setAuthCookie } from './auth.service'
 import { successResponse } from '../../utils/api-response'
 
+export const sendRegistrationOtpController: RequestHandler = async (request, response, next) => {
+  try {
+    const result = await authService.sendRegistrationOtp(request.body)
+
+    response.status(200).json(successResponse(result.message))
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const registerCustomerController: RequestHandler = async (request, response, next) => {
   try {
     const result = await authService.registerCustomer(request.body)

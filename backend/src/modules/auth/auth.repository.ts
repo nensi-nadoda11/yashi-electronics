@@ -23,8 +23,25 @@ const authCustomerSelect = {
   lastLoginAt: true,
 } satisfies Prisma.CustomerSelect
 
+const pendingCustomerRegistrationSelect = {
+  id: true,
+  fullName: true,
+  email: true,
+  mobile: true,
+  passwordHash: true,
+  otpHash: true,
+  otpExpiresAt: true,
+  verifiedAt: true,
+  createdAt: true,
+  updatedAt: true,
+} satisfies Prisma.PendingCustomerRegistrationSelect
+
 export type AuthCustomerRecord = Prisma.CustomerGetPayload<{
   select: typeof authCustomerSelect
+}>
+
+export type PendingCustomerRegistrationRecord = Prisma.PendingCustomerRegistrationGetPayload<{
+  select: typeof pendingCustomerRegistrationSelect
 }>
 
 export class AuthRepository {
@@ -60,6 +77,24 @@ export class AuthRepository {
     return prisma.customer.findUnique({
       where: { mobile },
       select: safeCustomerSelect,
+    })
+  }
+
+  async findPendingRegistrationByEmail(
+    email: string,
+  ): Promise<PendingCustomerRegistrationRecord | null> {
+    return prisma.pendingCustomerRegistration.findUnique({
+      where: { email },
+      select: pendingCustomerRegistrationSelect,
+    })
+  }
+
+  async findPendingRegistrationByMobile(
+    mobile: string,
+  ): Promise<PendingCustomerRegistrationRecord | null> {
+    return prisma.pendingCustomerRegistration.findUnique({
+      where: { mobile },
+      select: pendingCustomerRegistrationSelect,
     })
   }
 
@@ -99,6 +134,74 @@ export class AuthRepository {
       },
       select: safeCustomerSelect,
     })
+  }
+
+  async upsertPendingRegistration(input: {
+    email: string
+    fullName: string
+    mobile: string | null
+    otpExpiresAt: Date
+    otpHash: string
+    passwordHash: string
+  }): Promise<PendingCustomerRegistrationRecord> {
+    return prisma.pendingCustomerRegistration.upsert({
+      where: { email: input.email },
+      update: {
+        fullName: input.fullName,
+        mobile: input.mobile,
+        passwordHash: input.passwordHash,
+        otpHash: input.otpHash,
+        otpExpiresAt: input.otpExpiresAt,
+        verifiedAt: null,
+      },
+      create: {
+        fullName: input.fullName,
+        email: input.email,
+        mobile: input.mobile,
+        passwordHash: input.passwordHash,
+        otpHash: input.otpHash,
+        otpExpiresAt: input.otpExpiresAt,
+      },
+      select: pendingCustomerRegistrationSelect,
+    })
+  }
+
+  async deletePendingRegistration(id: string): Promise<void> {
+    await prisma.pendingCustomerRegistration.delete({
+      where: { id },
+    })
+  }
+
+  async createCustomerFromPendingRegistration(input: {
+    pendingRegistrationId: string
+  }): Promise<SafeCustomer> {
+    const result = await prisma.$transaction(async (transaction) => {
+      const pendingRegistration = await transaction.pendingCustomerRegistration.findUnique({
+        where: { id: input.pendingRegistrationId },
+      })
+
+      if (!pendingRegistration) {
+        throw new Error('Pending registration not found')
+      }
+
+      const customer = await transaction.customer.create({
+        data: {
+          fullName: pendingRegistration.fullName,
+          email: pendingRegistration.email,
+          mobile: pendingRegistration.mobile,
+          passwordHash: pendingRegistration.passwordHash,
+        },
+        select: safeCustomerSelect,
+      })
+
+      await transaction.pendingCustomerRegistration.delete({
+        where: { id: pendingRegistration.id },
+      })
+
+      return customer
+    })
+
+    return result
   }
 
   async updateLastLoginAt(id: string, lastLoginAt: Date): Promise<SafeCustomer> {

@@ -5,6 +5,7 @@ const DEFAULT_API_BASE_URL = 'http://localhost:4000/api/v1'
 const unauthenticatedAuthPaths = new Set([
   '/auth/login',
   '/auth/register',
+  '/auth/register/send-otp',
   '/auth/forgot-password',
   '/auth/reset-password',
 ])
@@ -50,4 +51,24 @@ export const getApiErrorMessage = (error: unknown) => {
   }
 
   return 'Something went wrong'
+}
+
+type FlattenedValidationErrors = {
+  fieldErrors?: Record<string, string[] | undefined>
+  formErrors?: string[]
+}
+
+export const getApiValidationErrors = (error: unknown) => {
+  if (!(error instanceof AxiosError)) {
+    return null
+  }
+
+  const apiResponse = error.response?.data as ApiResponse<unknown> | undefined
+  const flattenedErrors = apiResponse?.success === false ? (apiResponse.errors as FlattenedValidationErrors | undefined) : undefined
+
+  if (!flattenedErrors?.fieldErrors && !flattenedErrors?.formErrors) {
+    return null
+  }
+
+  return flattenedErrors
 }

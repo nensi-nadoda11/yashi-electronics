@@ -58,6 +58,13 @@ type SendPasswordResetEmailInput = {
   to: string
 }
 
+type SendRegistrationOtpEmailInput = {
+  customerName: string
+  expiresInMinutes: number
+  otp: string
+  to: string
+}
+
 export async function sendPasswordResetEmail(
   input: SendPasswordResetEmailInput,
 ): Promise<SendEmailResult> {
@@ -83,6 +90,40 @@ export async function sendPasswordResetEmail(
         <a href="${input.resetLink}" style="color: #2563eb; font-weight: 600;">Reset Password</a>
       </p>
       <p>If you did not request this, you can safely ignore this email.</p>
+    </div>
+  `
+
+  return sendEmail({
+    to: input.to,
+    subject,
+    text,
+    html,
+  })
+}
+
+export async function sendRegistrationOtpEmail(
+  input: SendRegistrationOtpEmailInput,
+): Promise<SendEmailResult> {
+  const subject = 'Your Yashi Electronics registration OTP'
+  const text = [
+    `Hello ${input.customerName},`,
+    '',
+    'Use the OTP below to complete your Yashi Electronics registration:',
+    input.otp,
+    '',
+    `This OTP expires in ${input.expiresInMinutes} minutes.`,
+    'If you did not request this, you can ignore this email.',
+  ].join('\n')
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; color: #0f172a; line-height: 1.6;">
+      <p>Hello ${input.customerName},</p>
+      <p>Use the OTP below to complete your Yashi Electronics registration:</p>
+      <p style="font-size: 28px; font-weight: 700; letter-spacing: 6px; color: #2563eb;">
+        ${input.otp}
+      </p>
+      <p>This OTP expires in ${input.expiresInMinutes} minutes.</p>
+      <p>If you did not request this, you can ignore this email.</p>
     </div>
   `
 

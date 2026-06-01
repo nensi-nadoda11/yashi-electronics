@@ -6,6 +6,7 @@ import type {
   LoginCustomerPayload,
   RegisterCustomerPayload,
   ResetPasswordPayload,
+  SendRegistrationOtpPayload,
 } from './auth.types'
 
 type CustomerEnvelope = {
@@ -14,6 +15,11 @@ type CustomerEnvelope = {
 
 export async function registerCustomer(payload: RegisterCustomerPayload) {
   const response = await apiClient.post<ApiResponse<CustomerEnvelope>>('/auth/register', payload)
+  return response.data
+}
+
+export async function sendRegistrationOtp(payload: SendRegistrationOtpPayload) {
+  const response = await apiClient.post<ApiResponse<undefined>>('/auth/register/send-otp', payload)
   return response.data
 }
 

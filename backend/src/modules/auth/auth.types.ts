@@ -23,6 +23,7 @@ export type RegisterCustomerInput = {
   email: string
   mobile?: string
   password: string
+  otp: string
 }
 
 export type LoginCustomerInput = {
@@ -37,5 +38,12 @@ export type ForgotPasswordInput = {
 export type ResetPasswordInput = {
   email: string
   token: string
+  password: string
+}
+
+export type SendRegistrationOtpInput = {
+  fullName: string
+  email: string
+  mobile?: string
   password: string
 }
