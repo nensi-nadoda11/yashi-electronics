@@ -25,7 +25,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   }
 
   if (!isAuthenticated) {
-    const redirectPath = `${location.pathname}${location.search}`
+    const redirectPath = `${location.pathname}${location.search}${location.hash}`
 
     return (
       <Navigate

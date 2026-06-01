@@ -1,4 +1,296 @@
 {
+  "E:\\yashi_electronics\\backend\\prisma\\seed.ts": {
+    "mtime": 1780052399.8938222,
+    "hash": "3cf860fd96689d1d490f4662d1c3e3c3"
+  },
+  "E:\\yashi_electronics\\backend\\prisma\\migrations\\20260529092937\\migration.sql": {
+    "mtime": 1780048986.000007,
+    "hash": "65bd0bf1fc409d0f8762cb2922d48ff9"
+  },
+  "E:\\yashi_electronics\\backend\\prisma\\migrations\\20260529102000_add_customer_auth_columns\\migration.sql": {
+    "mtime": 1780048986.4504397,
+    "hash": "df78f541a4a18faab8aebc5dd88a5725"
+  },
+  "E:\\yashi_electronics\\backend\\prisma\\migrations\\20260529170000_add_cart_item_indexes\\migration.sql": {
+    "mtime": 1780055831.6734257,
+    "hash": "950829d22f410581cde7975cfb4001f7"
+  },
+  "E:\\yashi_electronics\\backend\\prisma\\migrations\\20260529170000_add_wishlist_indexes\\migration.sql": {
+    "mtime": 1780052739.3053272,
+    "hash": "56d1098f121d2b580d983b687c1ba54e"
+  },
+  "E:\\yashi_electronics\\backend\\prisma\\migrations\\20260601093000_add_customer_address_indexes\\migration.sql": {
+    "mtime": 1780286572.6059418,
+    "hash": "19f89e5cd66ade1471b2b3a307db256a"
+  },
+  "E:\\yashi_electronics\\backend\\prisma\\migrations\\20260601103000_checkout_order_status_strings\\migration.sql": {
+    "mtime": 1780290308.1480954,
+    "hash": "5aeffc4cd2e6c8bccdb45be160baa1d2"
+  },
+  "E:\\yashi_electronics\\backend\\prisma\\migrations\\20260601113000_add_registration_otp_verification\\migration.sql": {
+    "mtime": 1780294581.9501576,
+    "hash": "cff50a7597264db6a6f445f496256a40"
+  },
+  "E:\\yashi_electronics\\backend\\prisma\\migrations\\20260601114000_add_pending_customer_registration\\migration.sql": {
+    "mtime": 1780294581.9501576,
+    "hash": "edbef077821ed57042215025d7002ff4"
+  },
+  "E:\\yashi_electronics\\backend\\src\\app.ts": {
+    "mtime": 1780295082.040954,
+    "hash": "97491860966a43710ffd7563cdcd8f8c"
+  },
+  "E:\\yashi_electronics\\backend\\src\\server.ts": {
+    "mtime": 1780046588.079683,
+    "hash": "30064119e669d48e8f427c3ec88cf508"
+  },
+  "E:\\yashi_electronics\\backend\\src\\config\\env.ts": {
+    "mtime": 1780295073.8484259,
+    "hash": "86633c05b4459c3e84de397cc226093d"
+  },
+  "E:\\yashi_electronics\\backend\\src\\db\\prisma.ts": {
+    "mtime": 1780046588.0705068,
+    "hash": "97916fb2e6ac61c48486c4d5e2b274f9"
+  },
+  "E:\\yashi_electronics\\backend\\src\\middlewares\\error.middleware.ts": {
+    "mtime": 1780295268.7407076,
+    "hash": "5feae964083a9689568bf58c55b46b0c"
+  },
+  "E:\\yashi_electronics\\backend\\src\\middlewares\\not-found.middleware.ts": {
+    "mtime": 1780046588.0742686,
+    "hash": "e8b328cdb5b925582eed97733c88a50f"
+  },
+  "E:\\yashi_electronics\\backend\\src\\middlewares\\rate-limit.middleware.ts": {
+    "mtime": 1780295108.5278013,
+    "hash": "83a5f473356b8358dc2b316565217dee"
+  },
+  "E:\\yashi_electronics\\backend\\src\\middlewares\\validate.middleware.ts": {
+    "mtime": 1780052399.8977811,
+    "hash": "800377702f80f61a849a4fff41425b80"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\address\\address.controller.ts": {
+    "mtime": 1780286543.4390428,
+    "hash": "d3836500cf3809666bdd220abf5372e7"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\address\\address.repository.ts": {
+    "mtime": 1780286565.2124834,
+    "hash": "61b71ec7fd4e45a496f4e868664595dd"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\address\\address.routes.ts": {
+    "mtime": 1780286543.9184523,
+    "hash": "8ba3a336cfc2cf3c7de6e07b6ee37081"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\address\\address.schemas.ts": {
+    "mtime": 1780295156.3734019,
+    "hash": "ec2a4ef379b75105679af6147293bbc7"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\address\\address.service.ts": {
+    "mtime": 1780286542.889964,
+    "hash": "523591e68b7fd520baa67777b42bb447"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\address\\address.types.ts": {
+    "mtime": 1780286541.3108897,
+    "hash": "294f8a267292fe837158e3a7c359f91c"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\auth\\auth.controller.ts": {
+    "mtime": 1780294581.954482,
+    "hash": "9a78e046a8323a9620770baed54a8b16"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\auth\\auth.middleware.ts": {
+    "mtime": 1780047143.6478326,
+    "hash": "1528ac8a161a5714cc9605c1b61c31c0"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\auth\\auth.repository.ts": {
+    "mtime": 1780294581.9567807,
+    "hash": "87b3d46c40246f22e82ddfe462da378d"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\auth\\auth.routes.ts": {
+    "mtime": 1780295120.3719864,
+    "hash": "64012103acb142ba907c1cabb3a6330d"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\auth\\auth.schemas.ts": {
+    "mtime": 1780295113.3754637,
+    "hash": "b9d820109d4a3c600df39b545bb55f0a"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\auth\\auth.service.ts": {
+    "mtime": 1780294581.9608238,
+    "hash": "f53c65db4a8a5b23f265437498d91344"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\auth\\auth.types.ts": {
+    "mtime": 1780294581.9608238,
+    "hash": "75efcb3728242b0d4dbdf839e7d86095"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\cart\\cart.controller.ts": {
+    "mtime": 1780295141.4831157,
+    "hash": "05092d98a33a4b6c231ec89ea7950856"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\cart\\cart.repository.ts": {
+    "mtime": 1780055832.6529193,
+    "hash": "5ada442e2da0e37a47545c0ed2d32dad"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\cart\\cart.routes.ts": {
+    "mtime": 1780055833.5439713,
+    "hash": "368132adf05c5ce6c67e4e853f77e576"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\cart\\cart.schemas.ts": {
+    "mtime": 1780295137.449605,
+    "hash": "961823243c9af5f45743d874739e95d3"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\cart\\cart.service.ts": {
+    "mtime": 1780055852.2051554,
+    "hash": "4836537de4a645c9cc7e7b52ece539d7"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\cart\\cart.types.ts": {
+    "mtime": 1780055832.1065683,
+    "hash": "1d716cfeb5741c4fec056eb84e28bc06"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\catalog\\brand.controller.ts": {
+    "mtime": 1780052399.8977811,
+    "hash": "3316f49e761d5b1b08eda15b3cc58ae9"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\catalog\\brand.service.ts": {
+    "mtime": 1780052399.9027803,
+    "hash": "a5977703b698a7fbb4847da159c47954"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\catalog\\catalog.routes.ts": {
+    "mtime": 1780295128.9935932,
+    "hash": "28c59b519b9c25a19c225e3215f6b2c8"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\catalog\\category.controller.ts": {
+    "mtime": 1780052399.9067202,
+    "hash": "dfce1cc053c3627b6f1775e19657f2ec"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\catalog\\category.service.ts": {
+    "mtime": 1780052399.910709,
+    "hash": "0590ca86d74aaddffbeb07fea2edb106"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\catalog\\product.controller.ts": {
+    "mtime": 1780295132.9835036,
+    "hash": "7a5f78c830a1cd5d10106c805290662a"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\catalog\\product.mapper.ts": {
+    "mtime": 1780052739.5743885,
+    "hash": "96aca69e7149fc3c5324873367c1cffa"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\catalog\\product.repository.ts": {
+    "mtime": 1780052399.9120123,
+    "hash": "37b773c7122108bb2eb2ccf4b754dcc5"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\catalog\\product.schemas.ts": {
+    "mtime": 1780295124.6428688,
+    "hash": "3d86e830530d938d5ce2844159814479"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\catalog\\product.service.ts": {
+    "mtime": 1780052739.8598268,
+    "hash": "bbff3dfa544c21598f4863b6e2b8deae"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\catalog\\product.types.ts": {
+    "mtime": 1780052399.9200523,
+    "hash": "0eab3ecb76af1711a05d7f3dea292201"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\checkout\\checkout.controller.ts": {
+    "mtime": 1780295166.2564578,
+    "hash": "165733b1aeb2fa23801be1252a9d86b3"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\checkout\\checkout.repository.ts": {
+    "mtime": 1780295182.9338696,
+    "hash": "d1e99a4b7acf9226dc1d5e320c17f4fa"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\checkout\\checkout.routes.ts": {
+    "mtime": 1780290308.1521053,
+    "hash": "4845ee320208b265b7d726550fd21bbf"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\checkout\\checkout.schemas.ts": {
+    "mtime": 1780295160.765558,
+    "hash": "95bc067f84a158a150214599fe07a3bb"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\checkout\\checkout.service.ts": {
+    "mtime": 1780295238.6473577,
+    "hash": "09805c2f3efe5b41bbf037e490e2db99"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\checkout\\checkout.types.ts": {
+    "mtime": 1780290308.155178,
+    "hash": "e6bd1a66be7543736b9af9f7719aeeef"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\orders\\orders.controller.ts": {
+    "mtime": 1780295254.1657877,
+    "hash": "47949b00742660c058d878eb874c3a1f"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\orders\\orders.repository.ts": {
+    "mtime": 1780291528.1518886,
+    "hash": "41273a32918ae5963d3f192602cbcf2c"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\orders\\orders.routes.ts": {
+    "mtime": 1780291582.9110065,
+    "hash": "d754d616a9ad87ee82598f6587575d9a"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\orders\\orders.schemas.ts": {
+    "mtime": 1780295247.1022396,
+    "hash": "64bce0d5017786b075a567779c2b6807"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\orders\\orders.service.ts": {
+    "mtime": 1780291573.1583335,
+    "hash": "5d7d8e2ad04c466f020de123fe09be4d"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\orders\\orders.types.ts": {
+    "mtime": 1780291487.629447,
+    "hash": "565bcae47c47845d325755ae5617532e"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\wishlist\\wishlist.controller.ts": {
+    "mtime": 1780295150.5996196,
+    "hash": "5603b128015c143d737f3b4377ca104d"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\wishlist\\wishlist.repository.ts": {
+    "mtime": 1780053421.2696552,
+    "hash": "25c5f3efd8abf534d13ef1bdfc3ba3a4"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\wishlist\\wishlist.routes.ts": {
+    "mtime": 1780052741.4381263,
+    "hash": "2c7bbe9a8cb0df6b406925bd148907b9"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\wishlist\\wishlist.schemas.ts": {
+    "mtime": 1780295145.5660615,
+    "hash": "e1cf59229a3105de74d8645cad758e21"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\wishlist\\wishlist.service.ts": {
+    "mtime": 1780053421.5088346,
+    "hash": "1e964fe86a99732fd48a06afb6df5537"
+  },
+  "E:\\yashi_electronics\\backend\\src\\modules\\wishlist\\wishlist.types.ts": {
+    "mtime": 1780052740.3111594,
+    "hash": "12ebdf695e26cfa74cb079830dc51a45"
+  },
+  "E:\\yashi_electronics\\backend\\src\\routes\\health.routes.ts": {
+    "mtime": 1780046588.0776756,
+    "hash": "4a5c7e9fe3bcfebfc7209168f4bf2177"
+  },
+  "E:\\yashi_electronics\\backend\\src\\routes\\index.ts": {
+    "mtime": 1780291587.3920646,
+    "hash": "ac0bacbfa9a01d064916cd180051d3f3"
+  },
+  "E:\\yashi_electronics\\backend\\src\\services\\email.service.ts": {
+    "mtime": 1780294581.9628308,
+    "hash": "5ff8b65362aa2d89d7ccf0e5405da912"
+  },
+  "E:\\yashi_electronics\\backend\\src\\types\\api.ts": {
+    "mtime": 1780046588.0816782,
+    "hash": "ad96d66e73926728dd75c3eef9ca87db"
+  },
+  "E:\\yashi_electronics\\backend\\src\\types\\express.d.ts": {
+    "mtime": 1780047125.1991062,
+    "hash": "ec46d31cb8e0755f3f348a569c21e2c5"
+  },
+  "E:\\yashi_electronics\\backend\\src\\utils\\api-response.ts": {
+    "mtime": 1780046588.0830576,
+    "hash": "1047036ab706408aa8f5f924bcc12a9f"
+  },
+  "E:\\yashi_electronics\\backend\\src\\utils\\app-error.ts": {
+    "mtime": 1780046588.0840554,
+    "hash": "acea12c67495bd9530acd298ee08056b"
+  },
+  "E:\\yashi_electronics\\backend\\src\\utils\\async-handler.ts": {
+    "mtime": 1780046588.0850525,
+    "hash": "a7d587c2b57f893a179a5074d05abeae"
+  },
   "E:\\yashi_electronics\\frontend\\eslint.config.js": {
     "mtime": 1778734508.685026,
     "hash": "0355276bc79439afe3c53e3a2470ca1e"
@@ -8,32 +300,316 @@
     "hash": "a545815e9774665a916fe473809fbd87"
   },
   "E:\\yashi_electronics\\frontend\\src\\App.tsx": {
-    "mtime": 1778734508.8781474,
-    "hash": "c5e44a49ac2a44373fba5d1a7fe35be4"
+    "mtime": 1780295287.2741036,
+    "hash": "be09650f7fbc71de4bab497d60579ce9"
   },
   "E:\\yashi_electronics\\frontend\\src\\main.tsx": {
     "mtime": 1778734508.8808765,
     "hash": "787e5a07efeb2bf6209d5937195f2f68"
   },
+  "E:\\yashi_electronics\\frontend\\src\\components\\auth\\ProtectedRoute.tsx": {
+    "mtime": 1780295303.0491662,
+    "hash": "57341d646bb988c5e0539e4d35ef56d7"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\components\\cart\\AddToCartButton.tsx": {
+    "mtime": 1780295316.327771,
+    "hash": "b410d3e2bace0b6cb55903680ead9102"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\components\\cart\\QuantitySelector.tsx": {
+    "mtime": 1780291189.673589,
+    "hash": "fb384979d6c15c51d7bd0dc3fea8c5b1"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\components\\common\\ApiHealthStatus.tsx": {
+    "mtime": 1780295433.870723,
+    "hash": "62bc8c6d99a065d62be449209cd4af92"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\components\\common\\ConfirmDialog.tsx": {
+    "mtime": 1780291699.9276807,
+    "hash": "c3cdaca29700c9b3ed4b4410fa670486"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\components\\common\\ErrorBoundary.tsx": {
+    "mtime": 1780295281.7828226,
+    "hash": "b928197beb024a927cd067988a6414b3"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\components\\layout\\CustomerLayout.tsx": {
+    "mtime": 1780044705.6196282,
+    "hash": "64a34a1d7678bf5b9077c92d58665d03"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\components\\layout\\Footer.tsx": {
+    "mtime": 1780046588.0948906,
+    "hash": "80862091fead7c229c2eec4824c529f7"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\components\\layout\\Header.tsx": {
+    "mtime": 1780295326.221838,
+    "hash": "dc7e70d06437df4699f0c3673390131c"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\components\\product\\ProductCard.tsx": {
+    "mtime": 1780056004.558719,
+    "hash": "3abe7b663629bab291c34bd162168e5d"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\components\\ui\\Badge.tsx": {
+    "mtime": 1780291666.0450835,
+    "hash": "a8621472346cc57faa6f11ecef6cd745"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\components\\ui\\button-styles.ts": {
+    "mtime": 1780044829.3768637,
+    "hash": "356c8fc0bc5e7244a2efa949511c8db9"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\components\\ui\\Button.tsx": {
+    "mtime": 1780044829.8686166,
+    "hash": "805e4d29ffa7729b2fb76b66faff1548"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\components\\ui\\Card.tsx": {
+    "mtime": 1780044702.389273,
+    "hash": "e9209d3701810da77b7ecbef341a1bae"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\components\\ui\\Container.tsx": {
+    "mtime": 1780044702.8480537,
+    "hash": "0122711810a2b8c3d23997a0c144804a"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\components\\ui\\EmptyState.tsx": {
+    "mtime": 1780044704.180411,
+    "hash": "1e6c14f12cbf491ef8458430646e51bc"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\components\\ui\\ErrorState.tsx": {
+    "mtime": 1780044703.9423103,
+    "hash": "1deb1923cd340896a53c958231c664ce"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\components\\ui\\Input.tsx": {
+    "mtime": 1780294581.9628308,
+    "hash": "e68890fa16336462b6644a9c060ceb28"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\components\\ui\\LoadingState.tsx": {
+    "mtime": 1780044703.6915154,
+    "hash": "018bd308148694a46a9ef65cecee8fc8"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\components\\ui\\PageHeader.tsx": {
+    "mtime": 1780044703.1584988,
+    "hash": "9ad85fddc59deefb10cd40f28e97d828"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\components\\ui\\SectionTitle.tsx": {
+    "mtime": 1780044703.4144044,
+    "hash": "d4ea3d9da72f700481e679eb546c91b1"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\components\\wishlist\\WishlistButton.tsx": {
+    "mtime": 1780295320.05618,
+    "hash": "a55eef6ce66c534861e7910e0449e933"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\data\\mock-data.ts": {
+    "mtime": 1780286826.4154077,
+    "hash": "94cb3d76649df5a6c64621b1bed41bb2"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\address\\address.api.ts": {
+    "mtime": 1780286676.463657,
+    "hash": "b19e90aa08126eae943fd4cdc34cdedf"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\address\\address.types.ts": {
+    "mtime": 1780286714.1408935,
+    "hash": "b69930da7fc30e13bb8d414f7ed466bb"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\address\\address.validation.ts": {
+    "mtime": 1780290292.8015232,
+    "hash": "885b1081ee690c2b026b9ac160626db1"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\address\\AddressCard.tsx": {
+    "mtime": 1780286969.899534,
+    "hash": "efa67205765523dc021f9ff7da40d89f"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\address\\AddressContext.tsx": {
+    "mtime": 1780286738.1852992,
+    "hash": "b64b341750d577a3da3b36d9893c7126"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\address\\AddressForm.tsx": {
+    "mtime": 1780290293.0823705,
+    "hash": "5c88457be9f4b7d34b719d1b72725b42"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\address\\AddressModal.tsx": {
+    "mtime": 1780290292.9373524,
+    "hash": "e4b139ff8248f09636ff58ec32b28dfe"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\address\\AddressSelector.tsx": {
+    "mtime": 1780290429.5661435,
+    "hash": "65ca54fe61faed34c1468295f20541bf"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\address\\useAddress.ts": {
+    "mtime": 1780286676.7959826,
+    "hash": "653ba393a9876d04e6ceebe4fa7720b9"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\auth\\auth.api.ts": {
+    "mtime": 1780294581.9648368,
+    "hash": "0e1a3aff091685aa9d5b5b04e4a727ee"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\auth\\auth.types.ts": {
+    "mtime": 1780294581.9668415,
+    "hash": "57bd7cfc100a315a9a148e1689c8064f"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\auth\\AuthContext.tsx": {
+    "mtime": 1780047273.35758,
+    "hash": "2175eeca5072ab88daa4ba0de8f15a5e"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\auth\\useAuth.ts": {
+    "mtime": 1780047273.6188116,
+    "hash": "6e1a018ebf16b1927bbbbe86c6750dbb"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\cart\\cart.api.ts": {
+    "mtime": 1780285085.730142,
+    "hash": "3ff4807f00987d621e81d813d01d84a7"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\cart\\cart.types.ts": {
+    "mtime": 1780055968.297713,
+    "hash": "232be6b7500444ce67bb4ced5e6c173d"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\cart\\CartContext.tsx": {
+    "mtime": 1780291107.8121712,
+    "hash": "c5ec39033c5bcab447050a74290ca2ab"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\cart\\useCart.ts": {
+    "mtime": 1780055969.157514,
+    "hash": "0e36d3e5490dc6840d5857011bedfe62"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\catalog\\catalog.api.ts": {
+    "mtime": 1780052399.9317641,
+    "hash": "73a0b53b44a0826e33c1f75935cdd2ca"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\catalog\\catalog.types.ts": {
+    "mtime": 1780052399.9337766,
+    "hash": "409a6ba55f57af005c7cbf0e9c382cea"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\checkout\\checkout.api.ts": {
+    "mtime": 1780290308.157182,
+    "hash": "1b34d3e41dbb390d1f8e60e6f6a15521"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\checkout\\checkout.types.ts": {
+    "mtime": 1780290308.157182,
+    "hash": "09d6ecbab4b13a460ad0f8017b705d99"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\orders\\CancelOrderModal.tsx": {
+    "mtime": 1780291709.697806,
+    "hash": "6b8d1a721b510214e515f9f32bb86b0d"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\orders\\orders.api.ts": {
+    "mtime": 1780291656.5555975,
+    "hash": "9afb9d70ad9350b1b1c5887a97ad8fb8"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\orders\\orders.types.ts": {
+    "mtime": 1780291648.3503008,
+    "hash": "a3c345b67c10bef0338f651aec83d88a"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\orders\\OrderStatusBadge.tsx": {
+    "mtime": 1780291677.7540982,
+    "hash": "fe090a76c90009d3dacc680b2275fa54"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\orders\\OrderTimeline.tsx": {
+    "mtime": 1780291912.9594903,
+    "hash": "906c74aa8362f4c2870eefa6ace23f94"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\orders\\PaymentStatusBadge.tsx": {
+    "mtime": 1780291673.691998,
+    "hash": "4fbff833a3544feac72da64bda8b547f"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\wishlist\\useWishlist.ts": {
+    "mtime": 1780052998.00242,
+    "hash": "bd4062b272cb5cb576f6e417c34609ba"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\wishlist\\wishlist.api.ts": {
+    "mtime": 1780052997.4966123,
+    "hash": "c55e34192be1a30eb31ac4e367cfb74d"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\wishlist\\wishlist.types.ts": {
+    "mtime": 1780052997.3098044,
+    "hash": "176151c5522f488097c02e160a0d8921"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\features\\wishlist\\WishlistContext.tsx": {
+    "mtime": 1780054491.1639314,
+    "hash": "300197a8760433076a5d63b29ad98ff0"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\lib\\api-client.ts": {
+    "mtime": 1780295296.663619,
+    "hash": "26d597c39420a8ffc7614292ff0e0a6f"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\pages\\CartPage.tsx": {
+    "mtime": 1780291066.2674708,
+    "hash": "de92826789cc2207535fcf732457f892"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\pages\\CheckoutPage.tsx": {
+    "mtime": 1780295446.793131,
+    "hash": "470d4b1d76947f443f8e6c7175bfd54f"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\pages\\HomePage.tsx": {
+    "mtime": 1780044863.292741,
+    "hash": "20a8bded0e9a2db4143c8aa8c2fd6358"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\pages\\index.ts": {
+    "mtime": 1780291898.9963417,
+    "hash": "b3536133af927e6ed897e0a0f1b76824"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\pages\\LoginPage.tsx": {
+    "mtime": 1780053244.3153143,
+    "hash": "fa1932b95dd5b37e7adf551f1c3b1f92"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\pages\\NotFoundPage.tsx": {
+    "mtime": 1780044864.2354856,
+    "hash": "bf54ba64850bf847d86a4627ec51d244"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\pages\\OrderDetailPage.tsx": {
+    "mtime": 1780291908.9558506,
+    "hash": "c2fdf1ae8c2992b109df43ec0dcfab55"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\pages\\OrdersPage.tsx": {
+    "mtime": 1780295406.9365344,
+    "hash": "91dea395ad181c98fc2abe4815b4d24d"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\pages\\PaymentPage.tsx": {
+    "mtime": 1780291903.1273944,
+    "hash": "236787531ef74a558d4c6f82bb1a34da"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\pages\\ProductDetailPage.tsx": {
+    "mtime": 1780295410.872044,
+    "hash": "ece54abdaa4e87bbad50005b53234854"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\pages\\ProductsPage.tsx": {
+    "mtime": 1780295416.72582,
+    "hash": "ba573e2cd8595fc9eda8c10602927544"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\pages\\ProfilePage.tsx": {
+    "mtime": 1780291925.057481,
+    "hash": "adce1c7bcc1a408bc71bab6ac8116ea5"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\pages\\RegisterPage.tsx": {
+    "mtime": 1780294581.9686236,
+    "hash": "5179f5202961a5b0ba5d9d4a9678bc44"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\pages\\WishlistPage.tsx": {
+    "mtime": 1780290685.7431147,
+    "hash": "026c2b0fb6a04ba8e6f9de4e3b0fdfa2"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\routes\\AppRouter.tsx": {
+    "mtime": 1780291896.2189736,
+    "hash": "5c9eb2450002206a9442eea8403cd0f6"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\types\\api.ts": {
+    "mtime": 1780046588.096885,
+    "hash": "10bf74b8b99bf61a90e3d9c804d57052"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\types\\store.ts": {
+    "mtime": 1780286825.992142,
+    "hash": "fb3c5aed8190a48788c9ff2cf5b97ca6"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\utils\\cn.ts": {
+    "mtime": 1780044699.926287,
+    "hash": "fc80fefbd368b2b7498bd6d061110bb2"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\utils\\format.ts": {
+    "mtime": 1780052399.9476442,
+    "hash": "0116099745c6b9c102c79ec7fd08a0a1"
+  },
   "E:\\yashi_electronics\\frontend\\index.html": {
-    "mtime": 1780035478.8904035,
-    "hash": "33bd262affcefea92f1509cda449a19c"
+    "mtime": 1780044711.028183,
+    "hash": "b1121785a3aa9af94abd7bdb68929336"
   },
   "E:\\yashi_electronics\\frontend\\README.md": {
     "mtime": 1778734508.748614,
     "hash": "f6e3faf55d738cf2affe1b44195f27cf"
-  },
-  "E:\\yashi_electronics\\frontend\\public\\favicon.svg": {
-    "mtime": 1778734508.8006384,
-    "hash": "7e840862161341271697daa99a40d76b"
-  },
-  "E:\\yashi_electronics\\frontend\\public\\icons.svg": {
-    "mtime": 1778734508.8192255,
-    "hash": "3b4fcfcf393eca4d264dca4a4663bc37"
-  },
-  "E:\\yashi_electronics\\frontend\\src\\assets\\hero.png": {
-    "mtime": 1778734508.7738142,
-    "hash": "aead493361b27e7510691c5d7072dfc1"
   },
   "E:\\yashi_electronics\\frontend\\src\\assets\\react.svg": {
     "mtime": 1778734508.8338852,

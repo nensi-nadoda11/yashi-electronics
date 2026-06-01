@@ -10,15 +10,45 @@ import { notFoundMiddleware } from './middlewares/not-found.middleware'
 import { apiRouter } from './routes'
 import { successResponse } from './utils/api-response'
 
+const localhostOrigins = new Set([
+  'http://localhost:3000',
+  'http://localhost:4173',
+  'http://localhost:5173',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:4173',
+  'http://127.0.0.1:5173',
+])
+
+const isLocalhostOrigin = (origin: string) => {
+  try {
+    const url = new URL(origin)
+    return (
+      (url.protocol === 'http:' || url.protocol === 'https:') &&
+      (url.hostname === 'localhost' || url.hostname === '127.0.0.1')
+    )
+  } catch {
+    return false
+  }
+}
+
 const corsOptions: CorsOptions = {
   credentials: true,
   origin(origin, callback) {
-    if (!origin || env.corsAllowedOrigins.includes(origin)) {
+    if (!origin) {
       callback(null, true)
       return
     }
 
-    callback(new Error('CORS origin not allowed'))
+    const isAllowedOrigin =
+      env.corsAllowedOrigins.includes(origin) ||
+      (!env.isProduction && (localhostOrigins.has(origin) || isLocalhostOrigin(origin)))
+
+    if (isAllowedOrigin) {
+      callback(null, true)
+      return
+    }
+
+    callback(new Error(`CORS origin not allowed: ${origin}`))
   },
 }
 
@@ -28,8 +58,8 @@ app.use(helmet())
 app.use(compression())
 app.use(cors(corsOptions))
 app.use(cookieParser())
-app.use(express.json({ limit: '1mb' }))
-app.use(express.urlencoded({ extended: true, limit: '1mb' }))
+app.use(express.json({ limit: '100kb' }))
+app.use(express.urlencoded({ extended: true, limit: '100kb' }))
 
 if (env.isDevelopment) {
   app.use(morgan('dev'))

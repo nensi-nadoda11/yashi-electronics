@@ -12,7 +12,7 @@ const trimmedOptionalStringSchema = z.preprocess((value) => {
 
 export const orderIdParamsSchema = z.object({
   orderId: z.string().cuid('Invalid orderId'),
-})
+}).strict()
 
 export const ordersQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
@@ -34,4 +34,4 @@ export const ordersQuerySchema = z.object({
     return trimmed.length > 0 ? trimmed : undefined
   }, z.enum(PAYMENT_STATUSES).optional()),
   search: trimmedOptionalStringSchema.optional(),
-})
+}).strict()

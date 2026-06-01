@@ -64,9 +64,9 @@ export function ApiHealthStatus() {
 
   const content =
     healthState.status === 'connected'
-      ? `API connected • ${databaseLabelMap[healthState.database]}`
+      ? `API connected - ${databaseLabelMap[healthState.database]}`
       : healthState.status === 'unavailable'
-        ? `API unavailable • ${healthState.message}`
+        ? `API unavailable - ${healthState.message}`
         : 'Checking API health...'
 
   const toneClassName =

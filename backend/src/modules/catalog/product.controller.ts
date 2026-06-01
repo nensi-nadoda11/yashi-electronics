@@ -11,7 +11,7 @@ export const getProductsController: RequestHandler = asyncHandler(async (request
 })
 
 export const getProductBySlugController: RequestHandler = asyncHandler(async (request, response) => {
-  const slug = typeof request.params.slug === 'string' ? request.params.slug : ''
+  const slug = request.params.slug as string
   const data = await getProductBySlug(slug)
 
   response.status(200).json(successResponse('Product fetched successfully', data))

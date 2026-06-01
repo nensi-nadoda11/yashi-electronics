@@ -40,15 +40,7 @@ export const toggleWishlistController: RequestHandler = asyncHandler(async (requ
 
 export const getWishlistStatusController: RequestHandler = asyncHandler(
   async (request, response) => {
-    const rawProductIds = request.query.productIds
-    const productIds: string[] = Array.isArray(rawProductIds)
-      ? rawProductIds.filter((entry): entry is string => typeof entry === 'string')
-      : typeof rawProductIds === 'string'
-        ? rawProductIds
-            .split(',')
-            .map((entry: string) => entry.trim())
-            .filter(Boolean)
-        : []
+    const productIds = request.query.productIds as string[]
 
     const data = await wishlistService.getWishlistStatus({
       customerId: request.customer!.id,

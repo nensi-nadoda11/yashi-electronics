@@ -56,11 +56,11 @@ export const registerCustomerSchema = registrationBaseSchema.extend({
 export const loginCustomerSchema = z.object({
   identifier: z.string().trim().min(1, 'Email or mobile is required'),
   password: z.string().min(1, 'Password is required'),
-})
+}).strict()
 
 export const forgotPasswordSchema = z.object({
   email: emailSchema,
-})
+}).strict()
 
 export const resetPasswordSchema = z
   .object({
@@ -69,6 +69,7 @@ export const resetPasswordSchema = z
     password: passwordSchema,
     confirmPassword: z.string(),
   })
+  .strict()
   .superRefine((value, context) => {
     if (value.password !== value.confirmPassword) {
       context.addIssue({

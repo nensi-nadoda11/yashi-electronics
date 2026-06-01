@@ -37,6 +37,33 @@ export type CheckoutCartItemRecord = Prisma.CartItemGetPayload<{
 
 export type CheckoutAddressRecord = Prisma.CustomerAddressGetPayload<{}>
 
+const checkoutOrderInclude = Prisma.validator<Prisma.OrderInclude>()({
+  items: {
+    select: {
+      productId: true,
+      quantity: true,
+      unitPrice: true,
+      gstAmount: true,
+      totalAmount: true,
+    },
+    orderBy: [{ createdAt: 'asc' }],
+  },
+  payment: {
+    select: {
+      id: true,
+      provider: true,
+      amount: true,
+      status: true,
+      paidAt: true,
+      createdAt: true,
+    },
+  },
+})
+
+export type CheckoutPendingOrderRecord = Prisma.OrderGetPayload<{
+  include: typeof checkoutOrderInclude
+}>
+
 export const checkoutRepository = {
   findCartByCustomerId(customerId: string, client: DbClient = prisma) {
     return getClient(client).cart.findUnique({
@@ -98,6 +125,19 @@ export const checkoutRepository = {
   ) {
     return getClient(client).payment.create({
       data,
+    })
+  },
+
+  findPendingOrdersByCustomerId(customerId: string, client: DbClient = prisma) {
+    return getClient(client).order.findMany({
+      where: {
+        customerId,
+        status: 'pending_payment',
+        paymentStatus: 'pending',
+      },
+      orderBy: [{ createdAt: 'desc' }],
+      include: checkoutOrderInclude,
+      take: 20,
     })
   },
 }

@@ -4,16 +4,11 @@ import { successResponse } from '../../utils/api-response'
 import { checkoutService } from './checkout.service'
 
 export const getCheckoutSummaryController: RequestHandler = asyncHandler(async (request, response) => {
-  const addressId =
-    typeof request.query.addressId === 'string' && request.query.addressId.trim().length > 0
-      ? request.query.addressId
-      : undefined
-
   const data = await checkoutService.getCheckoutSummary(
-    addressId
+    request.query.addressId
       ? {
           customerId: request.customer!.id,
-          addressId,
+          addressId: request.query.addressId as string,
         }
       : {
           customerId: request.customer!.id,

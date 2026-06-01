@@ -27,11 +27,11 @@ const addressBodySchema = z.object({
   pincode: z.string().trim().regex(/^\d{6}$/, 'Please enter a valid 6 digit pincode'),
   landmark: optionalTrimmedTextSchema,
   isDefault: z.boolean().optional(),
-})
+}).strict()
 
 export const addressIdParamsSchema = z.object({
   addressId: z.string().cuid('Invalid addressId'),
-})
+}).strict()
 
 export const createAddressBodySchema = addressBodySchema
 export const updateAddressBodySchema = addressBodySchema

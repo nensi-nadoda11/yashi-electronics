@@ -38,7 +38,7 @@ export function WishlistButton({
     }
 
     if (!isAuthenticated) {
-      const redirectPath = `${location.pathname}${location.search}`
+      const redirectPath = `${location.pathname}${location.search}${location.hash}`
       navigate(`/login?redirect=${encodeURIComponent(redirectPath)}`)
       return
     }

@@ -52,15 +52,77 @@ if (!parsedEnv.success) {
 
 const values = parsedEnv.data
 
+const trimCsvValues = (value: string) =>
+  value
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean)
+
+const hasEnvValue = (value: string | undefined) => typeof value === 'string' && value.trim().length > 0
+
+const productionRequiredEnvKeys = [
+  'DATABASE_URL',
+  'PORT',
+  'NODE_ENV',
+  'CORS_ALLOWED_ORIGINS',
+  'API_PREFIX',
+  'JWT_SECRET',
+  'JWT_EXPIRES_IN',
+  'AUTH_COOKIE_NAME',
+  'AUTH_COOKIE_MAX_AGE_DAYS',
+  'FRONTEND_URL',
+] as const
+
+const missingProductionEnvKeys = productionRequiredEnvKeys.filter((key) => {
+  const rawValue = process.env[key]
+
+  if (key === 'JWT_SECRET') {
+    return !hasEnvValue(rawValue) || rawValue === 'replace-with-strong-secret'
+  }
+
+  return !hasEnvValue(rawValue)
+})
+
+if (values.NODE_ENV === 'production' && missingProductionEnvKeys.length > 0) {
+  throw new Error(
+    `Missing critical production environment variables: ${missingProductionEnvKeys.join(', ')}`,
+  )
+}
+
+const developmentWarnings: string[] = []
+
+if (values.NODE_ENV === 'development') {
+  const optionalEmailEnvKeys = [
+    'EMAIL_PROVIDER',
+    'EMAIL_FROM_NAME',
+    'EMAIL_FROM_ADDRESS',
+    'SMTP_HOST',
+    'SMTP_PORT',
+    'SMTP_SECURE',
+    'SMTP_USER',
+    'SMTP_PASS',
+  ] as const
+
+  optionalEmailEnvKeys.forEach((key) => {
+    if (!hasEnvValue(process.env[key])) {
+      developmentWarnings.push(key)
+    }
+  })
+
+  if (developmentWarnings.length > 0) {
+    process.stdout.write(
+      `Development notice: optional email environment variables are not fully configured: ${developmentWarnings.join(', ')}\n`,
+    )
+  }
+}
+
 export const env = {
   apiPrefix: values.API_PREFIX,
   authCookieMaxAgeDays: values.AUTH_COOKIE_MAX_AGE_DAYS,
   authCookieName: values.AUTH_COOKIE_NAME,
   authCookieSameSite: values.AUTH_COOKIE_SAME_SITE,
   authCookieSecure: values.AUTH_COOKIE_SECURE,
-  corsAllowedOrigins: values.CORS_ALLOWED_ORIGINS.split(',')
-    .map((origin) => origin.trim())
-    .filter(Boolean),
+  corsAllowedOrigins: trimCsvValues(values.CORS_ALLOWED_ORIGINS),
   databaseUrl: values.DATABASE_URL,
   emailFromAddress: values.EMAIL_FROM_ADDRESS,
   emailFromName: values.EMAIL_FROM_NAME,

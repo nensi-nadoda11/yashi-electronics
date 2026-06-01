@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client'
+import { createHash } from 'node:crypto'
 import { prisma } from '../../db/prisma'
 import { AppError } from '../../utils/app-error'
 import { calculateEffectivePrice } from '../catalog/product.mapper'
@@ -6,6 +7,7 @@ import {
   checkoutRepository,
   type CheckoutAddressRecord,
   type CheckoutCartItemRecord,
+  type CheckoutPendingOrderRecord,
 } from './checkout.repository'
 import type {
   CheckoutAddress,
@@ -22,6 +24,20 @@ const ORDER_STATUS_PENDING_PAYMENT = 'pending_payment'
 const PAYMENT_STATUS_PENDING = 'pending'
 const FREE_DELIVERY_THRESHOLD = new Prisma.Decimal(999)
 const STANDARD_DELIVERY_CHARGE = new Prisma.Decimal(50)
+const DUPLICATE_PENDING_ORDER_WINDOW_MS = 2 * 60 * 1000
+const pendingOrderLocks = new Map<string, Promise<CreatePendingOrderResponse>>()
+
+type AddressFingerprintSource = Pick<
+  CheckoutAddress,
+  | 'fullName'
+  | 'mobile'
+  | 'addressLine1'
+  | 'addressLine2'
+  | 'city'
+  | 'state'
+  | 'pincode'
+  | 'landmark'
+>
 
 const toNumber = (value: Prisma.Decimal | number | string | null | undefined) => {
   if (value === null || value === undefined) {
@@ -44,6 +60,9 @@ const toDecimal = (value: Prisma.Decimal | number | string | null | undefined) =
 
 const roundMoney = (value: Prisma.Decimal) => Number(value.toDecimalPlaces(2).toString())
 
+const moneyToString = (value: Prisma.Decimal | number | string | null | undefined) =>
+  roundMoney(toDecimal(value)).toFixed(2)
+
 const createEmptySummary = (): CheckoutSummary => ({
   mrpTotal: 0,
   discountAmount: 0,
@@ -53,6 +72,109 @@ const createEmptySummary = (): CheckoutSummary => ({
   finalAmount: 0,
   totalItems: 0,
 })
+
+const buildAddressFingerprint = (address: AddressFingerprintSource) =>
+  JSON.stringify({
+    fullName: address.fullName.trim(),
+    mobile: address.mobile.trim(),
+    addressLine1: address.addressLine1.trim(),
+    addressLine2: address.addressLine2?.trim() ?? null,
+    city: address.city.trim(),
+    state: address.state.trim(),
+    pincode: address.pincode.trim(),
+    landmark: address.landmark?.trim() ?? null,
+  })
+
+const buildCheckoutFingerprint = (
+  checkout: CheckoutSummaryResponse,
+  address: CheckoutAddress,
+) => {
+  const payload = {
+    address: buildAddressFingerprint(address),
+    subtotal: moneyToString(checkout.summary.subtotal),
+    discountAmount: moneyToString(checkout.summary.discountAmount),
+    gstAmount: moneyToString(checkout.summary.gstAmount),
+    deliveryCharge: moneyToString(checkout.summary.deliveryCharge),
+    finalAmount: moneyToString(checkout.summary.finalAmount),
+    items: checkout.items
+      .map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+        lineSubtotal: moneyToString(item.lineSubtotal),
+        lineGstAmount: moneyToString(item.lineGstAmount),
+        lineTotal: moneyToString(item.lineTotal),
+      }))
+      .sort((left, right) => left.productId.localeCompare(right.productId)),
+  }
+
+  return createHash('sha256').update(JSON.stringify(payload)).digest('hex')
+}
+
+const buildOrderFingerprint = (order: CheckoutPendingOrderRecord) => {
+  const payload = {
+    address: buildAddressFingerprint({
+      fullName: order.shippingFullName,
+      mobile: order.shippingMobile,
+      addressLine1: order.shippingAddressLine1,
+      addressLine2: order.shippingAddressLine2,
+      city: order.shippingCity,
+      state: order.shippingState,
+      pincode: order.shippingPincode,
+      landmark: order.shippingLandmark,
+    }),
+    subtotal: moneyToString(order.subtotal),
+    discountAmount: moneyToString(order.discountAmount),
+    gstAmount: moneyToString(order.gstAmount),
+    deliveryCharge: moneyToString(order.deliveryCharge),
+    totalAmount: moneyToString(order.totalAmount),
+    items: order.items
+      .map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+        lineSubtotal: moneyToString(new Prisma.Decimal(item.unitPrice).times(item.quantity)),
+        lineGstAmount: moneyToString(item.gstAmount),
+        lineTotal: moneyToString(item.totalAmount),
+      }))
+      .sort((left, right) => left.productId.localeCompare(right.productId)),
+  }
+
+  return createHash('sha256').update(JSON.stringify(payload)).digest('hex')
+}
+
+const buildDuplicateOrderResponse = (order: CheckoutPendingOrderRecord): CreatePendingOrderResponse => ({
+  order: {
+    id: order.id,
+    orderNumber: order.orderNumber,
+    status: order.status,
+    paymentStatus: order.paymentStatus,
+    totalAmount: roundMoney(order.totalAmount),
+  },
+  payment: {
+    id: order.payment?.id ?? order.id,
+    status: order.payment?.status ?? PAYMENT_STATUS_PENDING,
+    provider: order.payment?.provider ?? 'online',
+    amount: roundMoney(order.payment?.amount ?? order.totalAmount),
+  },
+})
+
+const runWithCustomerLock = async (
+  customerId: string,
+  task: () => Promise<CreatePendingOrderResponse>,
+) => {
+  const existingLock = pendingOrderLocks.get(customerId)
+
+  if (existingLock) {
+    return existingLock
+  }
+
+  const lock = task().finally(() => {
+    pendingOrderLocks.delete(customerId)
+  })
+
+  pendingOrderLocks.set(customerId, lock)
+
+  return lock
+}
 
 const mapAddress = (address: CheckoutAddressRecord): CheckoutAddress => ({
   id: address.id,
@@ -191,9 +313,10 @@ const buildSummaryFromItems = (items: CheckoutItem[]): CheckoutSummary => {
 const resolveSelectedAddress = async (
   customerId: string,
   addressId?: string,
+  client: Prisma.TransactionClient | typeof prisma = prisma,
 ): Promise<{ selectedAddress: CheckoutAddress | null; addressIssue: CheckoutIssue | null }> => {
   if (addressId) {
-    const address = await checkoutRepository.findCustomerAddressById(customerId, addressId)
+    const address = await checkoutRepository.findCustomerAddressById(customerId, addressId, client)
 
     if (!address) {
       return {
@@ -212,7 +335,7 @@ const resolveSelectedAddress = async (
     }
   }
 
-  const defaultAddress = await checkoutRepository.findDefaultCustomerAddress(customerId)
+  const defaultAddress = await checkoutRepository.findDefaultCustomerAddress(customerId, client)
 
   return {
     selectedAddress: defaultAddress ? mapAddress(defaultAddress) : null,
@@ -228,9 +351,14 @@ const resolveSelectedAddress = async (
 
 const buildCheckoutState = async (
   input: CheckoutSummaryInput,
+  client: Prisma.TransactionClient | typeof prisma = prisma,
 ): Promise<CheckoutSummaryResponse> => {
-  const cart = await checkoutRepository.findCartByCustomerId(input.customerId)
-  const { selectedAddress, addressIssue } = await resolveSelectedAddress(input.customerId, input.addressId)
+  const cart = await checkoutRepository.findCartByCustomerId(input.customerId, client)
+  const { selectedAddress, addressIssue } = await resolveSelectedAddress(
+    input.customerId,
+    input.addressId,
+    client,
+  )
 
   if (!cart || cart.items.length === 0) {
     return {
@@ -285,111 +413,132 @@ export const checkoutService = {
   },
 
   async createPendingOrder(input: CreatePendingOrderInput): Promise<CreatePendingOrderResponse> {
-    const checkout = await buildCheckoutState({
-      customerId: input.customerId,
-      addressId: input.addressId,
-    })
+    return runWithCustomerLock(input.customerId, async () => {
+      for (let attempt = 0; attempt < 5; attempt += 1) {
+        try {
+          return await prisma.$transaction(async (transaction) => {
+            const checkout = await buildCheckoutState(
+              {
+                customerId: input.customerId,
+                addressId: input.addressId,
+              },
+              transaction,
+            )
 
-    if (!checkout.selectedAddress) {
-      throw new AppError('Please select a valid address', 400)
-    }
+            if (!checkout.selectedAddress) {
+              throw new AppError('Please select a valid address', 400)
+            }
 
-    if (checkout.items.length === 0) {
-      throw new AppError('Your cart is empty', 400)
-    }
+            if (checkout.items.length === 0) {
+              throw new AppError('Your cart is empty', 400)
+            }
 
-    if (!checkout.canCheckout) {
-      const blockingIssue = checkout.issues[0]
-      throw new AppError(blockingIssue?.message ?? 'Unable to create order right now', 400)
-    }
+            if (!checkout.canCheckout) {
+              const blockingIssue = checkout.issues[0]
+              throw new AppError(blockingIssue?.message ?? 'Unable to create order right now', 400)
+            }
 
-    const shippingAddress = checkout.selectedAddress
+            const shippingAddress = checkout.selectedAddress
+            const fingerprint = buildCheckoutFingerprint(checkout, shippingAddress)
+            const pendingOrders = await checkoutRepository.findPendingOrdersByCustomerId(
+              input.customerId,
+              transaction,
+            )
+            const duplicateOrder = pendingOrders.find((order) => {
+              if (Date.now() - order.createdAt.getTime() > DUPLICATE_PENDING_ORDER_WINDOW_MS) {
+                return false
+              }
 
-    for (let attempt = 0; attempt < 5; attempt += 1) {
-      try {
-        return await prisma.$transaction(async (transaction) => {
-          const createdAt = new Date()
-          const orderNumber = await generateOrderNumber(transaction, createdAt)
+              return buildOrderFingerprint(order) === fingerprint
+            })
 
-          const order = await checkoutRepository.createOrder(
-            {
-              customerId: input.customerId,
-              orderNumber,
-              status: ORDER_STATUS_PENDING_PAYMENT,
-              paymentStatus: PAYMENT_STATUS_PENDING,
-              subtotal: toDecimal(checkout.summary.subtotal),
-              discountAmount: toDecimal(checkout.summary.discountAmount),
-              gstAmount: toDecimal(checkout.summary.gstAmount),
-              deliveryCharge: toDecimal(checkout.summary.deliveryCharge),
-              totalAmount: toDecimal(checkout.summary.finalAmount),
-              shippingFullName: shippingAddress.fullName,
-              shippingMobile: shippingAddress.mobile,
-              shippingAddressLine1: shippingAddress.addressLine1,
-              shippingAddressLine2: shippingAddress.addressLine2,
-              shippingCity: shippingAddress.city,
-              shippingState: shippingAddress.state,
-              shippingPincode: shippingAddress.pincode,
-              shippingLandmark: shippingAddress.landmark,
-              createdAt,
-            },
-            transaction,
-          )
+            if (duplicateOrder) {
+              return buildDuplicateOrderResponse(duplicateOrder)
+            }
 
-          await checkoutRepository.createOrderItems(
-            checkout.items.map((item) => ({
-              orderId: order.id,
-              productId: item.productId,
-              productName: item.name,
-              sku: item.sku,
-              quantity: item.quantity,
-              unitPrice: toDecimal(item.effectivePrice),
-              gstPercentage: toDecimal(item.gstPercentage),
-              gstAmount: toDecimal(item.lineGstAmount),
-              totalAmount: toDecimal(item.lineTotal),
-            })),
-            transaction,
-          )
+            const createdAt = new Date()
+            const orderNumber = await generateOrderNumber(transaction, createdAt)
 
-          const payment = await checkoutRepository.createPayment(
-            {
-              orderId: order.id,
-              provider: input.paymentMethod,
-              amount: toDecimal(checkout.summary.finalAmount),
-              status: PAYMENT_STATUS_PENDING,
-            },
-            transaction,
-          )
+            const order = await checkoutRepository.createOrder(
+              {
+                customerId: input.customerId,
+                orderNumber,
+                status: ORDER_STATUS_PENDING_PAYMENT,
+                paymentStatus: PAYMENT_STATUS_PENDING,
+                subtotal: toDecimal(checkout.summary.subtotal),
+                discountAmount: toDecimal(checkout.summary.discountAmount),
+                gstAmount: toDecimal(checkout.summary.gstAmount),
+                deliveryCharge: toDecimal(checkout.summary.deliveryCharge),
+                totalAmount: toDecimal(checkout.summary.finalAmount),
+                shippingFullName: shippingAddress.fullName,
+                shippingMobile: shippingAddress.mobile,
+                shippingAddressLine1: shippingAddress.addressLine1,
+                shippingAddressLine2: shippingAddress.addressLine2,
+                shippingCity: shippingAddress.city,
+                shippingState: shippingAddress.state,
+                shippingPincode: shippingAddress.pincode,
+                shippingLandmark: shippingAddress.landmark,
+                createdAt,
+              },
+              transaction,
+            )
 
-          return {
-            order: {
-              id: order.id,
-              orderNumber: order.orderNumber,
-              status: order.status,
-              paymentStatus: order.paymentStatus,
-              totalAmount: roundMoney(order.totalAmount),
-            },
-            payment: {
-              id: payment.id,
-              status: payment.status,
-              provider: payment.provider,
-              amount: roundMoney(payment.amount),
-            },
+            await checkoutRepository.createOrderItems(
+              checkout.items.map((item) => ({
+                orderId: order.id,
+                productId: item.productId,
+                productName: item.name,
+                sku: item.sku,
+                quantity: item.quantity,
+                unitPrice: toDecimal(item.effectivePrice),
+                gstPercentage: toDecimal(item.gstPercentage),
+                gstAmount: toDecimal(item.lineGstAmount),
+                totalAmount: toDecimal(item.lineTotal),
+              })),
+              transaction,
+            )
+
+            const payment = await checkoutRepository.createPayment(
+              {
+                orderId: order.id,
+                provider: input.paymentMethod,
+                amount: toDecimal(checkout.summary.finalAmount),
+                status: PAYMENT_STATUS_PENDING,
+              },
+              transaction,
+            )
+
+            return {
+              order: {
+                id: order.id,
+                orderNumber: order.orderNumber,
+                status: order.status,
+                paymentStatus: order.paymentStatus,
+                totalAmount: roundMoney(order.totalAmount),
+              },
+              payment: {
+                id: payment.id,
+                status: payment.status,
+                provider: payment.provider,
+                amount: roundMoney(payment.amount),
+              },
+            }
+          })
+        } catch (error) {
+          if (
+            error instanceof Prisma.PrismaClientKnownRequestError &&
+            error.code === 'P2002' &&
+            Array.isArray(error.meta?.target) &&
+            error.meta.target.includes('orderNumber')
+          ) {
+            continue
           }
-        })
-      } catch (error) {
-        if (
-          error instanceof Prisma.PrismaClientKnownRequestError &&
-          error.code === 'P2002' &&
-          Array.isArray(error.meta?.target) &&
-          error.meta.target.includes('orderNumber')
-        ) {
-          continue
+
+          throw error
         }
-
-        throw error
       }
-    }
 
-    throw new AppError('Unable to generate a unique order number right now', 500)
+      throw new AppError('Unable to generate a unique order number right now', 500)
+    })
   },
 }

@@ -12,6 +12,8 @@ const unauthenticatedAuthPaths = new Set([
 
 let unauthorizedHandler: (() => void) | null = null
 
+const normalizeRequestPath = (url: string) => url.split('?')[0] ?? url
+
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL,
   withCredentials: true,
@@ -21,7 +23,7 @@ export const apiClient = axios.create({
 apiClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    const requestUrl = error.config?.url ?? ''
+    const requestUrl = normalizeRequestPath(error.config?.url ?? '')
     const statusCode = error.response?.status
 
     if (
@@ -42,6 +44,15 @@ export const setUnauthorizedHandler = (handler: (() => void) | null) => {
 
 export const getApiErrorMessage = (error: unknown) => {
   if (error instanceof AxiosError) {
+    if (!error.response) {
+      return 'Unable to reach the server. Please check your connection and try again.'
+    }
+
+    if (error.response.status === 401) {
+      const apiMessage = (error.response.data as ApiResponse<unknown> | undefined)?.message
+      return apiMessage || 'Your session has expired. Please sign in again.'
+    }
+
     const apiMessage = (error.response?.data as ApiResponse<unknown> | undefined)?.message
     return apiMessage || error.message || 'Request failed'
   }

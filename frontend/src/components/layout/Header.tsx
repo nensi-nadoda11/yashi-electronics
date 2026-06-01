@@ -73,6 +73,7 @@ export function Header() {
               <input
                 type="search"
                 placeholder="Search smartphones, laptops, audio, appliances..."
+                aria-label="Search products"
                 className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
               />
             </label>
@@ -147,6 +148,7 @@ export function Header() {
                 <input
                   type="search"
                   placeholder="Search products"
+                  aria-label="Search products"
                   className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
                 />
               </label>

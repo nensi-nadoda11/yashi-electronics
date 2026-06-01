@@ -294,7 +294,7 @@ export function CheckoutPage() {
                               )}
                             </div>
                             <p className="text-sm text-slate-500">
-                              {item.brand ?? 'Generic'} · {item.category} · Qty {item.quantity}
+                              {item.brand ?? 'Generic'} - {item.category} - Qty {item.quantity}
                             </p>
                             <p className="text-sm text-slate-500">
                               SKU: {item.sku}

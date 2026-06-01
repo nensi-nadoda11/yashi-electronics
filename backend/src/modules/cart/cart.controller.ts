@@ -19,11 +19,9 @@ export const addCartItemController: RequestHandler = asyncHandler(async (request
 })
 
 export const updateCartItemController: RequestHandler = asyncHandler(async (request, response) => {
-  const itemId = typeof request.params.itemId === 'string' ? request.params.itemId : ''
-
   const data = await cartService.updateCartItem({
     customerId: request.customer!.id,
-    itemId,
+    itemId: request.params.itemId as string,
     quantity: request.body.quantity,
   })
 
@@ -31,11 +29,9 @@ export const updateCartItemController: RequestHandler = asyncHandler(async (requ
 })
 
 export const removeCartItemController: RequestHandler = asyncHandler(async (request, response) => {
-  const itemId = typeof request.params.itemId === 'string' ? request.params.itemId : ''
-
   const data = await cartService.removeCartItem({
     customerId: request.customer!.id,
-    itemId,
+    itemId: request.params.itemId as string,
   })
 
   response.status(200).json(successResponse('Cart item removed successfully', data))

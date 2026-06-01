@@ -320,7 +320,7 @@ export function OrdersPage() {
                           <p>
                             Payment:{' '}
                             {order.paymentSummary
-                              ? `${order.paymentSummary.provider} · ${formatCurrency(order.paymentSummary.amount)}`
+                              ? `${order.paymentSummary.provider} • ${formatCurrency(order.paymentSummary.amount)}`
                               : 'Not available'}
                           </p>
                         </div>

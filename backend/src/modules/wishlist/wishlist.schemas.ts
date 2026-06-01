@@ -23,15 +23,15 @@ const normalizeProductIds = (value: unknown): string[] => {
 
 export const wishlistItemBodySchema = z.object({
   productId: productIdSchema,
-})
+}).strict()
 
 export const wishlistItemParamsSchema = z.object({
   productId: productIdSchema,
-})
+}).strict()
 
 export const wishlistStatusQuerySchema = z.object({
   productIds: z.preprocess(
     normalizeProductIds,
     z.array(productIdSchema).max(100).default([]),
   ),
-})
+}).strict()

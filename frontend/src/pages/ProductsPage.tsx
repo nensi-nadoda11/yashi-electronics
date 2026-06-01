@@ -467,6 +467,7 @@ export function ProductsPage() {
                     }}
                     type="search"
                     placeholder="Search by product, SKU, category, or brand"
+                    aria-label="Search products"
                     className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
                   />
                 </label>

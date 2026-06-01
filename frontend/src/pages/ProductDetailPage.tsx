@@ -169,6 +169,7 @@ export function ProductDetailPage() {
                   <button
                     key={image.id}
                     type="button"
+                    aria-label={`View ${image.altText ?? product.name}`}
                     onClick={() => {
                       setSelectedImage(image)
                       setImageFailed(false)
