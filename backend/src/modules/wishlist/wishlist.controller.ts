@@ -3,6 +3,28 @@ import { asyncHandler } from '../../utils/async-handler'
 import { successResponse } from '../../utils/api-response'
 import { wishlistService } from './wishlist.service'
 
+const parseProductIdsQuery = (value: unknown): string[] => {
+  if (Array.isArray(value)) {
+    return value.flatMap((entry) =>
+      typeof entry === 'string'
+        ? entry
+            .split(',')
+            .map((item) => item.trim())
+            .filter(Boolean)
+        : [],
+    )
+  }
+
+  if (typeof value === 'string') {
+    return value
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean)
+  }
+
+  return []
+}
+
 export const getWishlistController: RequestHandler = asyncHandler(async (request, response) => {
   const data = await wishlistService.getWishlist(request.customer!.id)
 
@@ -40,7 +62,7 @@ export const toggleWishlistController: RequestHandler = asyncHandler(async (requ
 
 export const getWishlistStatusController: RequestHandler = asyncHandler(
   async (request, response) => {
-    const productIds = request.query.productIds as string[]
+    const productIds = parseProductIdsQuery(request.query.productIds)
 
     const data = await wishlistService.getWishlistStatus({
       customerId: request.customer!.id,
