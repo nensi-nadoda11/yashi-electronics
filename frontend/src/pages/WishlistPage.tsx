@@ -1,6 +1,5 @@
 import { Heart, ShoppingCart, Trash2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { Container } from '../components/ui/Container'
@@ -11,21 +10,10 @@ import { PageHeader } from '../components/ui/PageHeader'
 import { buttonStyles } from '../components/ui/button-styles'
 import { useCart } from '../features/cart/useCart'
 import { useWishlist } from '../features/wishlist/useWishlist'
+import { cn } from '../utils/cn'
 import { formatCurrency } from '../utils/format'
 
 const fallbackImageUrl = 'https://placehold.co/900x900/e2e8f0/0f172a/png?text=Yashi+Electronics'
-
-const stockVariantMap = {
-  in_stock: 'success',
-  low_stock: 'warning',
-  out_of_stock: 'danger',
-} as const
-
-const stockLabelMap = {
-  in_stock: 'In Stock',
-  low_stock: 'Low Stock',
-  out_of_stock: 'Out of Stock',
-} as const
 
 export function WishlistPage() {
   const {
@@ -77,61 +65,51 @@ export function WishlistPage() {
         ) : (
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
             {items.map((item) => (
-              <Card key={item.wishlistId} className="overflow-hidden p-5">
-                <div className="space-y-5">
-                  <div className="overflow-hidden rounded-[28px] bg-[linear-gradient(135deg,#eff6ff_0%,#ffffff_55%,#dbeafe_100%)]">
+              <Card key={item.wishlistId} className="h-full min-h-[420px] overflow-hidden p-4">
+                <div className="flex h-full flex-col gap-4">
+                  <div className="relative overflow-hidden rounded-[24px] bg-[linear-gradient(135deg,#eff6ff_0%,#ffffff_55%,#dbeafe_100%)]">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="absolute right-3 top-3 z-10 h-10 w-10 rounded-full border-white/80 bg-white/95 p-0 text-slate-600 shadow-lg backdrop-blur hover:bg-white"
+                      disabled={isUpdating(item.product.id)}
+                      onClick={() => {
+                        void removeWishlistItem(item.product.id)
+                      }}
+                      aria-label={`Remove ${item.product.name} from wishlist`}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                     <img
                       src={item.product.primaryImage ?? fallbackImageUrl}
                       alt={item.product.name}
-                      className="aspect-square w-full object-cover"
+                      className="aspect-[4/3] w-full object-cover"
                     />
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <Badge variant="brand">{item.product.category}</Badge>
-                      <Badge variant={stockVariantMap[item.product.stockStatus]}>
-                        {stockLabelMap[item.product.stockStatus]}
-                      </Badge>
-                    </div>
-
+                  <div className="flex flex-1 flex-col gap-3">
                     <div className="space-y-2">
-                      {item.product.brand ? (
-                        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-brand-600">
-                          {item.product.brand}
-                        </p>
-                      ) : null}
-                      <p className="text-2xl font-bold text-slate-950">{item.product.name}</p>
-                      <p className="text-sm text-slate-500">SKU: {item.product.sku}</p>
+                      <p className="line-clamp-2 min-h-[3rem] text-xl font-bold leading-tight text-slate-950">
+                        {item.product.name}
+                      </p>
+                      <p className="text-2xl font-extrabold text-slate-950">
+                        {formatCurrency(item.product.effectivePrice)}
+                      </p>
                     </div>
 
-                    <div className="flex items-end justify-between gap-4">
-                      <div>
-                        <p className="text-2xl font-extrabold text-slate-950">
-                          {formatCurrency(item.product.effectivePrice)}
-                        </p>
-                        <div className="flex items-center gap-2 text-sm text-slate-500">
-                          <span className="line-through">{formatCurrency(item.product.mrp)}</span>
-                          {item.product.discountPercentage > 0 ? (
-                            <span className="font-semibold text-emerald-600">
-                              {item.product.discountPercentage}% off
-                            </span>
-                          ) : null}
-                        </div>
-                      </div>
-                      <p className="text-sm text-slate-500">GST: {item.product.gstPercentage}%</p>
-                    </div>
-
-                    <div className="grid gap-3">
+                    <div className="mt-auto grid gap-3">
                       <Link
                         to={`/products/${item.product.slug}`}
-                        className={buttonStyles('outline', 'md')}
+                        className={cn(buttonStyles('outline', 'sm'), 'w-full justify-center')}
                       >
                         View details
                       </Link>
                       <Button
                         type="button"
                         variant="secondary"
+                        size="sm"
+                        className="w-full"
                         disabled={
                           isUpdating(item.product.id) ||
                           isProductPending(item.product.id) ||
@@ -147,17 +125,6 @@ export function WishlistPage() {
                           : isProductPending(item.product.id)
                             ? 'Adding...'
                             : 'Move to Cart'}
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        disabled={isUpdating(item.product.id)}
-                        onClick={() => {
-                          void removeWishlistItem(item.product.id)
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        Remove
                       </Button>
                     </div>
                   </div>

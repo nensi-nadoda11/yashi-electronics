@@ -1,5 +1,5 @@
-import { ClipboardList, Filter, Search, ShoppingBag, X } from 'lucide-react'
-import { useEffect, useState, type FormEvent } from 'react'
+import { ClipboardList, Filter, ShoppingBag, X } from 'lucide-react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
@@ -47,6 +47,19 @@ const parseLimit = (value: string | null) => {
   return Math.min(parsed, 50)
 }
 
+const formatPreviewSummary = (order: OrderListItem) => {
+  if (order.previewItems.length === 0) {
+    return `Items: ${order.itemCount}`
+  }
+
+  const previewText = order.previewItems
+    .map((item) => `${item.productName} x${item.quantity}`)
+    .join(', ')
+
+  const remainingCount = order.itemCount - order.previewItems.length
+  return remainingCount > 0 ? `${previewText} +${remainingCount} more` : previewText
+}
+
 export function OrdersPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const page = parsePage(searchParams.get('page'))
@@ -75,7 +88,7 @@ export function OrdersPage() {
     setSearchDraft(search)
   }, [search])
 
-  const loadOrders = async () => {
+  const loadOrders = useCallback(async () => {
     setLoading(true)
     setError(null)
 
@@ -95,41 +108,51 @@ export function OrdersPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [limit, page, paymentStatus, search, status])
 
   useEffect(() => {
     void loadOrders()
-    // loadOrders intentionally depends on the derived params above.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, limit, status, paymentStatus, search])
+  }, [loadOrders])
 
-  const updateSearchParams = (
-    updates: Record<string, string | undefined>,
-    options?: { resetPage?: boolean },
-  ) => {
-    setSearchParams((current) => {
-      const next = new URLSearchParams(current)
+  const updateSearchParams = useCallback(
+    (updates: Record<string, string | undefined>, options?: { resetPage?: boolean }) => {
+      setSearchParams((current) => {
+        const next = new URLSearchParams(current)
 
-      Object.entries(updates).forEach(([key, value]) => {
-        if (value && value.trim().length > 0) {
-          next.set(key, value)
-        } else {
-          next.delete(key)
+        Object.entries(updates).forEach(([key, value]) => {
+          if (value && value.trim().length > 0) {
+            next.set(key, value)
+          } else {
+            next.delete(key)
+          }
+        })
+
+        if (options?.resetPage !== false) {
+          next.set('page', '1')
         }
-      })
 
-      if (options?.resetPage !== false) {
-        next.set('page', '1')
+        return next
+      })
+    },
+    [setSearchParams],
+  )
+
+  useEffect(() => {
+    const nextSearch = searchDraft.trim()
+    const currentSearch = search.trim()
+
+    const timer = window.setTimeout(() => {
+      if (nextSearch === currentSearch) {
+        return
       }
 
-      return next
-    })
-  }
+      updateSearchParams({ search: nextSearch || undefined })
+    }, 300)
 
-  const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    updateSearchParams({ search: searchDraft.trim() })
-  }
+    return () => {
+      window.clearTimeout(timer)
+    }
+  }, [search, searchDraft, updateSearchParams])
 
   const clearFilters = () => {
     setSearchParams({
@@ -165,7 +188,7 @@ export function OrdersPage() {
       <PageHeader
         eyebrow="Order History"
         title="Track your customer orders"
-        description="Search by order number, filter by status, and continue or cancel eligible pending orders from one place."
+        description="Search, filter, and manage customer orders from one place."
         actions={
           <div className="flex flex-wrap gap-3">
             {hasFilters ? (
@@ -183,23 +206,14 @@ export function OrdersPage() {
       />
 
       <Container className="pb-16">
-        <div className="mb-6 grid gap-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_16px_55px_-35px_rgba(15,23,42,0.35)] lg:grid-cols-[1.5fr_1fr_1fr_auto]">
-          <form className="lg:col-span-1" onSubmit={(event) => void handleSearchSubmit(event)}>
-            <Input
-              id="order-search"
-              label="Search order number"
-              value={searchDraft}
-              onChange={(event) => setSearchDraft(event.target.value)}
-              placeholder="Search by order number"
-              hint="Use the exact order number or a partial match."
-            />
-            <div className="mt-3 flex flex-wrap gap-3">
-              <Button type="submit" variant="primary">
-                <Search className="h-4 w-4" />
-                Search
-              </Button>
-            </div>
-          </form>
+        <div className="mb-6 grid gap-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_16px_55px_-35px_rgba(15,23,42,0.35)] lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1fr)]">
+          <Input
+            id="order-search"
+            label="Search order number"
+            value={searchDraft}
+            onChange={(event) => setSearchDraft(event.target.value)}
+            placeholder="Search by order number"
+          />
 
           <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
             <span className="inline-flex items-center gap-2">
@@ -208,9 +222,7 @@ export function OrdersPage() {
             </span>
             <select
               value={status ?? ''}
-              onChange={(event) =>
-                updateSearchParams({ status: event.target.value || undefined })
-              }
+              onChange={(event) => updateSearchParams({ status: event.target.value || undefined })}
               className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
             >
               <option value="">All statuses</option>
@@ -238,23 +250,6 @@ export function OrdersPage() {
               {PAYMENT_STATUS_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
-            <span>Rows per page</span>
-            <select
-              value={String(limit)}
-              onChange={(event) =>
-                updateSearchParams({ limit: event.target.value || String(DEFAULT_LIMIT) })
-              }
-              className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
-            >
-              {[10, 20, 50].map((option) => (
-                <option key={option} value={option}>
-                  {option}
                 </option>
               ))}
             </select>
@@ -290,22 +285,10 @@ export function OrdersPage() {
           />
         ) : (
           <div className="space-y-4">
-            <div className="flex flex-col gap-2 rounded-3xl border border-slate-200 bg-white p-4 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between">
-              <p>
-                Showing {orders.length} of {pagination.total} order
-                {pagination.total === 1 ? '' : 's'}
-              </p>
-              <p>
-                {pagination.totalPages > 0
-                  ? `Page ${pagination.page} of ${pagination.totalPages}`
-                  : 'No results'}
-              </p>
-            </div>
-
             <div className="grid gap-4">
               {orders.map((order) => (
-                <Card key={order.id} className="p-6">
-                  <div className="flex flex-col gap-5">
+                <Card key={order.id} className="p-5">
+                  <div className="flex flex-col gap-4">
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                       <div className="space-y-3">
                         <div className="flex flex-wrap items-center gap-3">
@@ -323,6 +306,12 @@ export function OrdersPage() {
                               ? `${order.paymentSummary.provider} • ${formatCurrency(order.paymentSummary.amount)}`
                               : 'Not available'}
                           </p>
+                        </div>
+                        <div className="flex flex-wrap items-start gap-2 rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-600">
+                          <span className="font-medium text-slate-500">Products:</span>
+                          <span className="font-semibold text-slate-900">
+                            {formatPreviewSummary(order)}
+                          </span>
                         </div>
                       </div>
 
@@ -352,26 +341,6 @@ export function OrdersPage() {
                         ) : null}
                       </div>
                     </div>
-
-                    <div className="space-y-3 rounded-3xl bg-slate-50 p-4">
-                      <p className="text-sm font-semibold text-slate-500">Preview items</p>
-                      <div className="flex flex-wrap gap-2">
-                        {order.previewItems.map((item, index) => (
-                          <span
-                            key={`${order.id}-${item.productName}-${index}`}
-                            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-sm text-slate-700"
-                          >
-                            <span className="font-medium">{item.productName}</span>
-                            <span className="text-slate-400">x{item.quantity}</span>
-                          </span>
-                        ))}
-                        {order.itemCount > order.previewItems.length ? (
-                          <span className="inline-flex items-center rounded-full border border-brand-100 bg-brand-50 px-3 py-1 text-sm font-medium text-brand-700">
-                            +{order.itemCount - order.previewItems.length} more
-                          </span>
-                        ) : null}
-                      </div>
-                    </div>
                   </div>
                 </Card>
               ))}
@@ -387,7 +356,10 @@ export function OrdersPage() {
                     type="button"
                     variant="outline"
                     onClick={() =>
-                      updateSearchParams({ page: String(Math.max(1, pagination.page - 1)) }, { resetPage: false })
+                      updateSearchParams(
+                        { page: String(Math.max(1, pagination.page - 1)) },
+                        { resetPage: false },
+                      )
                     }
                     disabled={pagination.page <= 1}
                   >
