@@ -41,19 +41,6 @@ export interface Order {
   paymentStatus: 'Paid' | 'Pending' | 'Refunded'
 }
 
-export interface Address {
-  id: number
-  label: string
-  name: string
-  line1: string
-  line2: string
-  city: string
-  state: string
-  pincode: string
-  phone: string
-  isDefault?: boolean
-}
-
 export interface CustomerProfile {
   name: string
   email: string

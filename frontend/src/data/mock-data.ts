@@ -1,5 +1,4 @@
 import type {
-  Address,
   CartItem,
   CategoryPreview,
   CustomerProfile,
@@ -213,32 +212,6 @@ export const orders: Order[] = [
     items: 1,
     orderStatus: 'Processing',
     paymentStatus: 'Pending',
-  },
-]
-
-export const addresses: Address[] = [
-  {
-    id: 1,
-    label: 'Home',
-    name: 'Rahul Sharma',
-    line1: '221, Palm Residency',
-    line2: 'Sector 62',
-    city: 'Noida',
-    state: 'Uttar Pradesh',
-    pincode: '201309',
-    phone: '+91 98765 43210',
-    isDefault: true,
-  },
-  {
-    id: 2,
-    label: 'Office',
-    name: 'Rahul Sharma',
-    line1: '4th Floor, Tech Axis Tower',
-    line2: 'Electronic City Phase 1',
-    city: 'Bengaluru',
-    state: 'Karnataka',
-    pincode: '560100',
-    phone: '+91 98765 43210',
   },
 ]
 

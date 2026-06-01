@@ -1,13 +1,20 @@
-import { FileText, LogOut, MapPinned, UserRound } from 'lucide-react'
+import { LogOut, MapPinned, Plus, RotateCcw, UserRound } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Badge } from '../components/ui/Badge'
+import { AddressCard } from '../features/address/AddressCard'
+import { AddressModal } from '../features/address/AddressModal'
+import { useAddress } from '../features/address/useAddress'
+import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { Container } from '../components/ui/Container'
+import { EmptyState } from '../components/ui/EmptyState'
+import { ErrorState } from '../components/ui/ErrorState'
+import { LoadingState } from '../components/ui/LoadingState'
 import { PageHeader } from '../components/ui/PageHeader'
+import { SectionTitle } from '../components/ui/SectionTitle'
 import { buttonStyles } from '../components/ui/button-styles'
+import { ConfirmDialog } from '../components/common/ConfirmDialog'
 import { useAuth } from '../features/auth/useAuth'
-import { addresses } from '../data/mock-data'
 
 const formatDate = (value?: string | null) => {
   if (!value) {
@@ -22,7 +29,30 @@ const formatDate = (value?: string | null) => {
 
 export function ProfilePage() {
   const { customer, logout } = useAuth()
+  const {
+    addresses,
+    count,
+    loading,
+    error,
+    isMutating,
+    fetchAddresses,
+    addAddress,
+    editAddress,
+    removeAddress,
+    setDefault,
+  } = useAddress()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false)
+  const [editingAddressId, setEditingAddressId] = useState<string | null>(null)
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null)
+  const [deleteError, setDeleteError] = useState('')
+
+  const editingAddress = editingAddressId
+    ? addresses.find((address) => address.id === editingAddressId) ?? null
+    : null
+  const deleteTarget = deleteTargetId
+    ? addresses.find((address) => address.id === deleteTargetId) ?? null
+    : null
 
   const handleLogout = async () => {
     setIsLoggingOut(true)
@@ -34,14 +64,52 @@ export function ProfilePage() {
     }
   }
 
-  const memberSince = customer ? formatDate(customer.lastLoginAt ?? null) : 'Not available'
+  const openCreateModal = () => {
+    setEditingAddressId(null)
+    setIsAddressModalOpen(true)
+  }
+
+  const openEditModal = (addressId: string) => {
+    setEditingAddressId(addressId)
+    setIsAddressModalOpen(true)
+  }
+
+  const closeAddressModal = () => {
+    setIsAddressModalOpen(false)
+    setEditingAddressId(null)
+  }
+
+  const handleDelete = (addressId: string) => {
+    setDeleteError('')
+    setDeleteTargetId(addressId)
+  }
+
+  const closeDeleteDialog = () => {
+    setDeleteTargetId(null)
+    setDeleteError('')
+  }
+
+  const handleSubmitAddress = async (payload: Parameters<typeof addAddress>[0]) => {
+    if (editingAddress) {
+      await editAddress(editingAddress.id, payload)
+      return
+    }
+
+    await addAddress(payload)
+  }
 
   return (
     <>
       <PageHeader
         eyebrow="Customer Profile"
-        title="Manage account details and shopping preferences"
-        description="Review your registered customer details and stay ready for upcoming account, address, and order modules."
+        title="Manage account details and saved addresses"
+        description="Review your registered customer details and keep delivery addresses up to date."
+        actions={
+          <Button type="button" variant="secondary" onClick={openCreateModal}>
+            <Plus className="h-4 w-4" />
+            Add Address
+          </Button>
+        }
       />
 
       <Container className="grid gap-6 pb-16 lg:grid-cols-[0.95fr_1.05fr]">
@@ -85,51 +153,126 @@ export function ProfilePage() {
           </div>
         </Card>
 
-        <div className="space-y-6">
-          <Card className="p-6">
-            <div className="flex items-center gap-3">
-              <FileText className="h-5 w-5 text-brand-600" />
-              <h2 className="text-xl font-bold text-slate-950">Account Details</h2>
-            </div>
-            <div className="mt-5 grid gap-4 sm:grid-cols-2">
-              {[
-                { label: 'Primary Email', value: customer?.email ?? '-' },
-                { label: 'Mobile Number', value: customer?.mobile ?? 'Not added yet' },
-                { label: 'Account State', value: customer?.isActive ? 'Active customer' : 'Inactive customer' },
-                { label: 'Recent Login', value: memberSince },
-              ].map((item) => (
-                <div key={item.label} className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
-                  <p className="text-sm font-semibold text-slate-500">{item.label}</p>
-                  <p className="mt-2 text-base font-semibold text-slate-950">{item.value}</p>
-                </div>
-              ))}
-            </div>
-          </Card>
+        <Card className="p-6">
+          <SectionTitle
+            eyebrow="Saved Addresses"
+            title="Delivery address book"
+            description="Add, edit, delete, or set a default delivery address."
+            action={
+              <Button type="button" variant="outline" onClick={() => void fetchAddresses()} disabled={loading}>
+                <RotateCcw className="h-4 w-4" />
+                Refresh
+              </Button>
+            }
+          />
 
-          <Card className="p-6">
-            <div className="flex items-center gap-3">
-              <MapPinned className="h-5 w-5 text-brand-600" />
-              <h2 className="text-xl font-bold text-slate-950">Saved Addresses</h2>
-            </div>
-            <div className="mt-5 grid gap-4">
-              {addresses.map((address) => (
-                <div key={address.id} className="rounded-3xl border border-slate-200 p-5">
-                  <div className="flex items-center gap-3">
-                    <h3 className="text-lg font-semibold text-slate-950">{address.label}</h3>
-                    {address.isDefault ? <Badge variant="brand">Default</Badge> : null}
+          <div className="mt-6">
+            {loading && addresses.length === 0 ? (
+              <LoadingState
+                title="Loading addresses"
+                description="Fetching your saved delivery addresses."
+                cardCount={2}
+              />
+            ) : error && addresses.length === 0 ? (
+              <ErrorState
+                title="Unable to load addresses"
+                description={error}
+                action={
+                  <Button type="button" variant="outline" onClick={() => void fetchAddresses()}>
+                    Retry
+                  </Button>
+                }
+              />
+            ) : addresses.length === 0 ? (
+              <EmptyState
+                icon={MapPinned}
+                title="No addresses found"
+                description="Add a delivery address to get started."
+                action={
+                  <Button type="button" variant="secondary" onClick={openCreateModal}>
+                    <Plus className="h-4 w-4" />
+                    Add Address
+                  </Button>
+                }
+              />
+            ) : (
+              <div className="space-y-4">
+                {error ? (
+                  <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                    {error}
                   </div>
-                  <p className="mt-3 text-sm leading-6 text-slate-600">
-                    Future address management will appear here in Module 4. This placeholder preserves the account dashboard layout without introducing partial address CRUD yet.
-                  </p>
+                ) : null}
+
+                <div className="grid gap-4">
+                  {addresses.map((address) => (
+                    <AddressCard
+                      key={address.id}
+                      address={address}
+                      onEdit={() => openEditModal(address.id)}
+                      onDelete={() => handleDelete(address.id)}
+                      onSetDefault={() => {
+                        void setDefault(address.id).catch(() => undefined)
+                      }}
+                      isBusy={isMutating}
+                      showDelete
+                      showSetDefault
+                    />
+                  ))}
                 </div>
-              ))}
-            </div>
-            <Link to="/orders" className={`${buttonStyles('outline', 'md')} mt-5`}>
+
+                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+                  <div className="flex items-center gap-3">
+                    <MapPinned className="h-5 w-5 text-brand-600" />
+                    <div>
+                      <p className="text-sm font-semibold text-slate-500">Saved addresses</p>
+                      <p className="text-lg font-semibold text-slate-950">
+                        {count} {count === 1 ? 'address' : 'addresses'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="mt-5">
+            <Link to="/orders" className={buttonStyles('ghost', 'md')}>
               View Recent Orders
             </Link>
-          </Card>
-        </div>
+          </div>
+        </Card>
       </Container>
+
+      <AddressModal
+        isOpen={isAddressModalOpen}
+        mode={editingAddress ? 'edit' : 'create'}
+        address={editingAddress}
+        onClose={closeAddressModal}
+        onSubmit={(payload) => handleSubmitAddress(payload)}
+      />
+
+      <ConfirmDialog
+        isOpen={Boolean(deleteTarget)}
+        title="Delete this address?"
+        description="This address will be removed from your saved delivery list."
+        confirmLabel="Delete"
+        error={deleteError}
+        isLoading={isMutating}
+        onCancel={closeDeleteDialog}
+        onConfirm={async () => {
+          if (!deleteTarget) {
+            return
+          }
+
+          setDeleteError('')
+
+          try {
+            await removeAddress(deleteTarget.id)
+            closeDeleteDialog()
+          } catch (error) {
+            setDeleteError(error instanceof Error ? error.message : 'Unable to delete address')
+          }
+        }}
+      />
     </>
   )
 }
