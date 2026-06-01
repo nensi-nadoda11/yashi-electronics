@@ -61,7 +61,7 @@ export function PaymentPage() {
             </div>
 
             <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5 text-sm leading-6 text-slate-600">
-              Payment integration will be added in Module 9. Your cart has not been cleared and stock has not been deducted in this step.
+              Payment integration will be added in the payment module. Your cart has not been cleared and stock has not been deducted in this step.
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row">

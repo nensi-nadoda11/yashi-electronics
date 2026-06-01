@@ -189,7 +189,7 @@ export function CartPage() {
                               value={item.quantity}
                               min={1}
                               max={item.product.stockQuantity}
-                              disabled={isPending || isOutOfStock}
+                              disabled={isOutOfStock}
                               onChange={(value) => void updateItemQuantity(item.cartItemId, value)}
                             />
                             <Button

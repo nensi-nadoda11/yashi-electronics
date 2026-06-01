@@ -1,7 +1,7 @@
 import type { HTMLAttributes } from 'react'
 import { cn } from '../../utils/cn'
 
-type BadgeVariant = 'neutral' | 'brand' | 'success' | 'warning' | 'danger'
+export type BadgeVariant = 'neutral' | 'brand' | 'success' | 'warning' | 'danger'
 
 const badgeStyles: Record<BadgeVariant, string> = {
   neutral: 'bg-slate-100 text-slate-700',

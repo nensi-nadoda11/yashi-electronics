@@ -27,24 +27,24 @@ export function QuantitySelector({
   return (
     <div
       className={cn(
-        'inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 p-2',
+        'inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-2 py-2 shadow-sm',
         className,
       )}
     >
       <Button
         type="button"
-        variant="ghost"
+        variant="outline"
         size="sm"
-        className="h-8 w-8 rounded-full p-0"
+        className="h-10 w-10 shrink-0 rounded-full p-0 text-slate-800 hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700"
         disabled={!canDecrease}
         onClick={() => onChange(Math.max(effectiveMin, value - 1))}
         aria-label="Decrease quantity"
       >
-        <Minus className="h-4 w-4" />
+        <Minus className="h-5 w-5" strokeWidth={2.5} />
       </Button>
       <span
         className={cn(
-          'min-w-10 rounded-full px-2 text-center text-sm font-semibold text-slate-700',
+          'min-w-12 rounded-full px-3 text-center text-base font-semibold text-slate-800',
           disabled ? 'opacity-60' : '',
         )}
         aria-live="polite"
@@ -53,14 +53,14 @@ export function QuantitySelector({
       </span>
       <Button
         type="button"
-        variant="ghost"
+        variant="outline"
         size="sm"
-        className="h-8 w-8 rounded-full p-0"
+        className="h-10 w-10 shrink-0 rounded-full p-0 text-slate-800 hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700"
         disabled={!canIncrease}
         onClick={() => onChange(Math.min(effectiveMax, value + 1))}
         aria-label="Increase quantity"
       >
-        <Plus className="h-4 w-4" />
+        <Plus className="h-5 w-5" strokeWidth={2.5} />
       </Button>
     </div>
   )

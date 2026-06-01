@@ -25,6 +25,12 @@ export function AddressForm({
   const inputClassName = 'text-sm'
 
   const fieldErrorClassName = 'mt-2 text-xs font-medium text-rose-600'
+  const requiredLabel = (label: string) => (
+    <span className="inline-flex items-center gap-1">
+      <span>{label}</span>
+      <span className="text-rose-600">*</span>
+    </span>
+  )
 
   return (
     <form className="space-y-5" onSubmit={onSubmit}>
@@ -32,7 +38,7 @@ export function AddressForm({
         <div>
           <Input
             id="address-full-name"
-            label="Full Name"
+            label={requiredLabel('Full Name')}
             placeholder="Rahul Sharma"
             value={values.fullName}
             onChange={(event) => onChange('fullName', event.target.value)}
@@ -43,7 +49,7 @@ export function AddressForm({
         <div>
           <Input
             id="address-mobile"
-            label="Mobile"
+            label={requiredLabel('Mobile')}
             placeholder="9876543210"
             inputMode="numeric"
             value={values.mobile}
@@ -55,7 +61,7 @@ export function AddressForm({
         <div>
           <Input
             id="address-line-1"
-            label="Address Line 1"
+            label={requiredLabel('Address Line 1')}
             placeholder="House no, street, area"
             value={values.addressLine1}
             onChange={(event) => onChange('addressLine1', event.target.value)}
@@ -77,7 +83,7 @@ export function AddressForm({
         <div>
           <Input
             id="address-city"
-            label="City"
+            label={requiredLabel('City')}
             placeholder="Noida"
             value={values.city}
             onChange={(event) => onChange('city', event.target.value)}
@@ -88,7 +94,7 @@ export function AddressForm({
         <div>
           <Input
             id="address-state"
-            label="State"
+            label={requiredLabel('State')}
             placeholder="Uttar Pradesh"
             value={values.state}
             onChange={(event) => onChange('state', event.target.value)}
@@ -99,7 +105,7 @@ export function AddressForm({
         <div>
           <Input
             id="address-pincode"
-            label="Pincode"
+            label={requiredLabel('Pincode')}
             placeholder="201309"
             inputMode="numeric"
             value={values.pincode}

@@ -7,6 +7,7 @@ import { ForgotPasswordPage } from '../pages/ForgotPasswordPage'
 import { HomePage } from '../pages/HomePage'
 import { LoginPage } from '../pages/LoginPage'
 import { NotFoundPage } from '../pages/NotFoundPage'
+import { OrderDetailPage } from '../pages/OrderDetailPage'
 import { OrdersPage } from '../pages/OrdersPage'
 import { PaymentPage } from '../pages/PaymentPage'
 import { ProductDetailPage } from '../pages/ProductDetailPage'
@@ -57,6 +58,14 @@ export function AppRouter() {
             element={(
               <ProtectedRoute>
                 <OrdersPage />
+              </ProtectedRoute>
+            )}
+          />
+          <Route
+            path="/orders/:orderId"
+            element={(
+              <ProtectedRoute>
+                <OrderDetailPage />
               </ProtectedRoute>
             )}
           />

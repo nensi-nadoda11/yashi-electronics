@@ -6,6 +6,7 @@ import { getApiErrorMessage } from '../../lib/api-client'
 import { AddressForm } from './AddressForm'
 import {
   createEmptyAddressFormValues,
+  extractAddressValidationErrors,
   validateAddressForm,
 } from './address.validation'
 import type { Address, AddressFormErrors, AddressFormValues, AddressUpsertPayload } from './address.types'
@@ -101,6 +102,20 @@ export function AddressModal({
       await onSubmit(validation.payload)
       onClose()
     } catch (error) {
+      const validationErrors = extractAddressValidationErrors(error)
+
+      if (validationErrors) {
+        if (Object.keys(validationErrors.fieldErrors).length > 0) {
+          setErrors((current) => ({
+            ...current,
+            ...validationErrors.fieldErrors,
+          }))
+        }
+
+        setSubmitError(validationErrors.formError)
+        return
+      }
+
       setSubmitError(getApiErrorMessage(error))
     } finally {
       setIsSubmitting(false)

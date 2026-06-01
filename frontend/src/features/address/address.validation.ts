@@ -78,3 +78,59 @@ export const validateAddressForm = (values: AddressFormValues) => {
     isValid: Object.keys(errors).length === 0,
   }
 }
+
+type FlattenedValidationErrors = {
+  fieldErrors?: Partial<Record<keyof AddressFormValues, string[] | undefined>>
+  formErrors?: string[]
+}
+
+const addressFormFields: Array<keyof AddressFormValues> = [
+  'fullName',
+  'mobile',
+  'addressLine1',
+  'addressLine2',
+  'city',
+  'state',
+  'pincode',
+  'landmark',
+  'isDefault',
+]
+
+export const extractAddressValidationErrors = (error: unknown) => {
+  const response = error as {
+    response?: {
+      data?: {
+        errors?: unknown
+      }
+    }
+  }
+
+  const flattenedErrors = response.response?.data?.errors as FlattenedValidationErrors | undefined
+
+  if (!flattenedErrors) {
+    return null
+  }
+
+  const nextErrors: AddressFormErrors = {}
+  let hasFieldErrors = false
+
+  for (const field of addressFormFields) {
+    const message = flattenedErrors.fieldErrors?.[field]?.[0]
+
+    if (message) {
+      nextErrors[field] = message
+      hasFieldErrors = true
+    }
+  }
+
+  const formError = flattenedErrors.formErrors?.[0] ?? ''
+
+  if (!hasFieldErrors && !formError) {
+    return null
+  }
+
+  return {
+    fieldErrors: nextErrors,
+    formError: hasFieldErrors ? '' : formError,
+  }
+}

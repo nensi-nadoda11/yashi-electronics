@@ -9,6 +9,7 @@ import { ErrorState } from '../components/ui/ErrorState'
 import { LoadingState } from '../components/ui/LoadingState'
 import { PageHeader } from '../components/ui/PageHeader'
 import { buttonStyles } from '../components/ui/button-styles'
+import { useCart } from '../features/cart/useCart'
 import { useWishlist } from '../features/wishlist/useWishlist'
 import { formatCurrency } from '../utils/format'
 
@@ -35,6 +36,7 @@ export function WishlistPage() {
     removeWishlistItem,
     isUpdating,
   } = useWishlist()
+  const { addItem, isProductPending } = useCart()
 
   return (
     <>
@@ -127,9 +129,24 @@ export function WishlistPage() {
                       >
                         View details
                       </Link>
-                      <Button type="button" variant="secondary">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        disabled={
+                          isUpdating(item.product.id) ||
+                          isProductPending(item.product.id) ||
+                          item.product.stockStatus === 'out_of_stock'
+                        }
+                        onClick={() => {
+                          void addItem(item.product.id, 1)
+                        }}
+                      >
                         <ShoppingCart className="h-4 w-4" />
-                        Move to Cart
+                        {item.product.stockStatus === 'out_of_stock'
+                          ? 'Out of Stock'
+                          : isProductPending(item.product.id)
+                            ? 'Adding...'
+                            : 'Move to Cart'}
                       </Button>
                       <Button
                         type="button"

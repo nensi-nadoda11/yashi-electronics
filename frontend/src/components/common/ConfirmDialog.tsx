@@ -9,6 +9,7 @@ type ConfirmDialogProps = {
   title: string
   description: string
   confirmLabel: string
+  loadingLabel?: string
   cancelLabel?: string
   error?: string | null
   isLoading?: boolean
@@ -21,6 +22,7 @@ export function ConfirmDialog({
   title,
   description,
   confirmLabel,
+  loadingLabel = 'Please wait...',
   cancelLabel = 'Cancel',
   error,
   isLoading = false,
@@ -106,7 +108,7 @@ export function ConfirmDialog({
             {cancelLabel}
           </Button>
           <Button type="button" variant="danger" onClick={() => void onConfirm()} disabled={isLoading}>
-            {isLoading ? 'Deleting...' : confirmLabel}
+            {isLoading ? loadingLabel : confirmLabel}
           </Button>
         </div>
       </Card>

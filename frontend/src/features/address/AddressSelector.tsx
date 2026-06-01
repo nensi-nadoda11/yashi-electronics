@@ -40,13 +40,6 @@ export function AddressSelector({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
-        <Button type="button" variant="outline" size="sm" onClick={onAdd} disabled={isBusy}>
-          <Plus className="h-4 w-4" />
-          Add Address
-        </Button>
-      </div>
-
       <div className="grid gap-4">
         {addresses.map((address) => (
           <AddressCard

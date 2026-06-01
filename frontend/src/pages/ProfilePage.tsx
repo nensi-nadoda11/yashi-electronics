@@ -255,6 +255,7 @@ export function ProfilePage() {
         title="Delete this address?"
         description="This address will be removed from your saved delivery list."
         confirmLabel="Delete"
+        loadingLabel="Deleting..."
         error={deleteError}
         isLoading={isMutating}
         onCancel={closeDeleteDialog}
