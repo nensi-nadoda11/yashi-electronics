@@ -8,6 +8,7 @@ import { HomePage } from '../pages/HomePage'
 import { LoginPage } from '../pages/LoginPage'
 import { NotFoundPage } from '../pages/NotFoundPage'
 import { OrdersPage } from '../pages/OrdersPage'
+import { PaymentPage } from '../pages/PaymentPage'
 import { ProductDetailPage } from '../pages/ProductDetailPage'
 import { ProductsPage } from '../pages/ProductsPage'
 import { ProfilePage } from '../pages/ProfilePage'
@@ -56,6 +57,14 @@ export function AppRouter() {
             element={(
               <ProtectedRoute>
                 <OrdersPage />
+              </ProtectedRoute>
+            )}
+          />
+          <Route
+            path="/payment/:orderId"
+            element={(
+              <ProtectedRoute>
+                <PaymentPage />
               </ProtectedRoute>
             )}
           />
