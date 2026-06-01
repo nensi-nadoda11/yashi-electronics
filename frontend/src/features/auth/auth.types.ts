@@ -19,6 +19,15 @@ export type RegisterCustomerPayload = {
   mobile?: string
   password: string
   confirmPassword: string
+  otp: string
+}
+
+export type SendRegistrationOtpPayload = {
+  fullName: string
+  email: string
+  mobile?: string
+  password: string
+  confirmPassword: string
 }
 
 export type LoginCustomerPayload = {

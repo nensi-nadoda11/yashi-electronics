@@ -14,23 +14,25 @@ const mobileSchema = z
 
 const passwordSchema = z.string().min(8, 'Password must be at least 8 characters')
 
-export const registerCustomerSchema = z
-  .object({
-    fullName: fullNameSchema,
-    email: emailSchema,
-    mobile: z
-      .union([z.string(), z.undefined()])
-      .transform((value) => {
-        if (!value || value.trim() === '') {
-          return undefined
-        }
+const registrationFieldsSchema = {
+  fullName: fullNameSchema,
+  email: emailSchema,
+  mobile: z
+    .union([z.string(), z.undefined()])
+    .transform((value) => {
+      if (!value || value.trim() === '') {
+        return undefined
+      }
 
-        return value
-      })
-      .pipe(mobileSchema.optional()),
-    password: passwordSchema,
-    confirmPassword: z.string(),
-  })
+      return value
+    })
+    .pipe(mobileSchema.optional()),
+  password: passwordSchema,
+  confirmPassword: z.string().min(1, 'Confirm password is required'),
+}
+
+const registrationBaseSchema = z
+  .object(registrationFieldsSchema)
   .superRefine((value, context) => {
     if (value.password !== value.confirmPassword) {
       context.addIssue({
@@ -40,6 +42,16 @@ export const registerCustomerSchema = z
       })
     }
   })
+
+export const sendRegistrationOtpSchema = registrationBaseSchema
+
+export const registerCustomerSchema = registrationBaseSchema.extend({
+  otp: z
+    .string()
+    .trim()
+    .length(6, 'OTP must be 6 digits')
+    .regex(/^\d{6}$/, 'OTP must be 6 digits'),
+})
 
 export const loginCustomerSchema = z.object({
   identifier: z.string().trim().min(1, 'Email or mobile is required'),

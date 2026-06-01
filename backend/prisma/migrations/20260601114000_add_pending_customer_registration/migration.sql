@@ -1,0 +1,3 @@
+-- No-op migration.
+-- The PendingCustomerRegistration table creation lives in
+-- 20260601113000_add_registration_otp_verification/migration.sql.

@@ -41,6 +41,7 @@ const envSchema = z.object({
   SMTP_USER: z.string().trim().default(''),
   SMTP_PASS: z.string().trim().default(''),
   RESET_PASSWORD_TOKEN_EXPIRY_MINUTES: z.coerce.number().int().positive().default(30),
+  REGISTRATION_OTP_EXPIRY_MINUTES: z.coerce.number().int().positive().default(10),
 })
 
 const parsedEnv = envSchema.safeParse(process.env)
@@ -69,6 +70,7 @@ export const env = {
   jwtExpiresIn: values.JWT_EXPIRES_IN,
   jwtSecret: values.JWT_SECRET,
   port: values.PORT,
+  registrationOtpExpiryMinutes: values.REGISTRATION_OTP_EXPIRY_MINUTES,
   resetPasswordTokenExpiryMinutes: values.RESET_PASSWORD_TOKEN_EXPIRY_MINUTES,
   smtpHost: values.SMTP_HOST,
   smtpPass: values.SMTP_PASS,
