@@ -933,6 +933,81 @@ const products: ProductSeed[] = [
   },
 ]
 
+const generatedBrandSlugs = [
+  'generic',
+  'yashi',
+  'sony',
+  'philips',
+  'panasonic',
+  'lg',
+  'omron',
+  'siemens',
+  'schneider',
+  'dell',
+  'hp',
+]
+
+const generatedPricingProfiles: Record<
+  string,
+  { mrp: number; selling: number; stock: number }
+> = {
+  'basic-electronic-components': { mrp: 29, selling: 24, stock: 180 },
+  'integrated-circuits': { mrp: 79, selling: 59, stock: 120 },
+  'power-supply-components': { mrp: 499, selling: 399, stock: 48 },
+  'display-components': { mrp: 249, selling: 199, stock: 42 },
+  sensors: { mrp: 199, selling: 159, stock: 65 },
+  'connectors-and-wiring': { mrp: 129, selling: 99, stock: 110 },
+  'audio-components': { mrp: 149, selling: 119, stock: 75 },
+  'communication-modules': { mrp: 299, selling: 249, stock: 55 },
+  'computer-and-pcb-components': { mrp: 159, selling: 129, stock: 95 },
+  'industrial-electronics-components': { mrp: 1599, selling: 1399, stock: 18 },
+}
+
+const generatedDummyProducts: ProductSeed[] = catalogNavigation.flatMap(
+  (mainCategory, mainCategoryIndex) =>
+    mainCategory.children.flatMap((childCategory, childCategoryIndex) => {
+      const pricingProfile =
+        generatedPricingProfiles[mainCategory.slug] ?? generatedPricingProfiles.sensors
+
+      return ['Starter Pack', 'Advanced Pack'].map((variantLabel, variantIndex) => {
+        const variantSlug = variantIndex === 0 ? 'starter-pack' : 'advanced-pack'
+        const skuNumber = mainCategoryIndex * 100 + childCategoryIndex * 2 + variantIndex + 1
+        const sellingPrice = pricingProfile.selling + childCategoryIndex * 9 + variantIndex * 6
+        const mrp = pricingProfile.mrp + childCategoryIndex * 12 + variantIndex * 8
+        const discountPrice = Math.max(1, sellingPrice - (variantIndex === 0 ? 8 : 12))
+
+        return {
+          name: `${childCategory.name} ${variantLabel}`,
+          slug: `${childCategory.slug}-${variantSlug}`,
+          sku: `YEC-TST-${String(skuNumber).padStart(4, '0')}`,
+          categorySlug: childCategory.slug,
+          brandSlug:
+            generatedBrandSlugs[
+              (mainCategoryIndex * 7 + childCategoryIndex + variantIndex) % generatedBrandSlugs.length
+            ],
+          shortDescription: `${childCategory.name} ${variantLabel.toLowerCase()} for catalog testing and filtering.`,
+          description: `Dummy product for ${childCategory.name.toLowerCase()} under ${mainCategory.name.toLowerCase()}. Useful for category, brand, and stock testing.`,
+          mrp,
+          sellingPrice,
+          discountPrice,
+          gstPercentage: 18,
+          stockQuantity: Math.max(
+            0,
+            pricingProfile.stock - childCategoryIndex * 2 - variantIndex * 3,
+          ),
+          isFeatured: variantIndex === 0 && childCategoryIndex % 4 === 0,
+          imageCount: variantIndex === 0 ? 2 : 3,
+          specifications: [
+            { name: 'Use Case', value: `${childCategory.name} testing product` },
+            { name: 'Variant', value: variantLabel },
+            { name: 'Category', value: childCategory.name },
+            { name: 'Ready For', value: 'Search, filter, and demo browsing' },
+          ],
+        }
+      })
+    }),
+)
+
 const seedCatalog = async () => {
   for (const category of categories) {
     await prisma.category.upsert({
@@ -968,7 +1043,9 @@ const seedCatalog = async () => {
     })
   }
 
-  for (const product of products) {
+  const allProducts = [...products, ...generatedDummyProducts]
+
+  for (const product of allProducts) {
     const images = Array.from({ length: product.imageCount }, (_, index) => ({
       imageUrl: placeholderImageUrl(product.name, index + 1),
       altText: `${product.name} image ${index + 1}`,
@@ -1042,7 +1119,9 @@ const seedCatalog = async () => {
 
 const run = async () => {
   await seedCatalog()
-  process.stdout.write(`Seeded ${categories.length} categories, ${brands.length} brands, and ${products.length} products.\n`)
+  process.stdout.write(
+    `Seeded ${categories.length} categories, ${brands.length} brands, and ${products.length + generatedDummyProducts.length} products.\n`,
+  )
 }
 
 run()
