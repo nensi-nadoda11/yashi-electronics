@@ -1,5 +1,8 @@
-import { Prisma } from '@prisma/client'
 import { AppError } from '../../utils/app-error'
+import {
+  mapCatalogProductSummary,
+  mapPrimaryImage,
+} from './product.mapper'
 import {
   findProductBySlug,
   findProducts,
@@ -7,149 +10,16 @@ import {
 } from './product.repository'
 import type {
   CatalogProductDetail,
-  CatalogProductImage,
-  CatalogProductSummary,
   ProductFilters,
   ProductQueryInput,
-  ProductStockStatus,
   ProductsPagination,
 } from './product.types'
-
-const toNumber = (value: Prisma.Decimal | number | string | null | undefined) => {
-  if (value === null || value === undefined) {
-    return null
-  }
-
-  if (typeof value === 'number') {
-    return value
-  }
-
-  if (typeof value === 'string') {
-    return Number(value)
-  }
-
-  return value.toNumber()
-}
-
-export const calculateEffectivePrice = (
-  sellingPrice: Prisma.Decimal | number | string,
-  discountPrice?: Prisma.Decimal | number | string | null,
-) => {
-  const normalizedDiscountPrice = toNumber(discountPrice)
-  const normalizedSellingPrice = toNumber(sellingPrice) ?? 0
-
-  return normalizedDiscountPrice ?? normalizedSellingPrice
-}
-
-export const calculateDiscountPercentage = (
-  mrp: Prisma.Decimal | number | string,
-  effectivePrice: Prisma.Decimal | number | string,
-) => {
-  const normalizedMrp = toNumber(mrp) ?? 0
-  const normalizedEffectivePrice = toNumber(effectivePrice) ?? 0
-
-  if (normalizedMrp <= 0 || normalizedMrp <= normalizedEffectivePrice) {
-    return 0
-  }
-
-  return Math.round(((normalizedMrp - normalizedEffectivePrice) / normalizedMrp) * 100)
-}
-
-export const getStockStatus = (stockQuantity: number): ProductStockStatus => {
-  if (stockQuantity <= 0) {
-    return 'out_of_stock'
-  }
-
-  if (stockQuantity <= 5) {
-    return 'low_stock'
-  }
-
-  return 'in_stock'
-}
 
 const normalizeBrandSlugs = (brand?: string) =>
   brand
     ?.split(',')
     .map((slug) => slug.trim())
     .filter(Boolean) ?? []
-
-const mapPrimaryImage = (
-  image:
-    | {
-        id: string | null
-        imageUrl: string | null
-        altText: string | null
-        sortOrder: number | null
-      }
-    | undefined,
-): CatalogProductImage | null => {
-  if (!image?.id || !image.imageUrl) {
-    return null
-  }
-
-  return {
-    id: image.id,
-    imageUrl: image.imageUrl,
-    altText: image.altText,
-    sortOrder: image.sortOrder ?? 0,
-  }
-}
-
-const mapProductSummary = (product: {
-  id: string
-  slug: string
-  sku: string
-  name: string
-  shortDescription: string | null
-  description: string | null
-  mrp: Prisma.Decimal | number | string
-  sellingPrice: Prisma.Decimal | number | string
-  discountPrice: Prisma.Decimal | number | string | null
-  gstPercentage: Prisma.Decimal | number | string
-  stockQuantity: number
-  isFeatured: boolean
-  createdAt: Date
-  updatedAt: Date
-  category: {
-    id: string
-    name: string
-    slug: string
-  }
-  brand: {
-    id: string
-    name: string
-    slug: string
-  } | null
-  primaryImage: CatalogProductImage | null
-}): CatalogProductSummary => {
-  const mrp = toNumber(product.mrp) ?? 0
-  const sellingPrice = toNumber(product.sellingPrice) ?? 0
-  const discountPrice = toNumber(product.discountPrice)
-  const effectivePrice = calculateEffectivePrice(product.sellingPrice, product.discountPrice)
-
-  return {
-    id: product.id,
-    slug: product.slug,
-    sku: product.sku,
-    name: product.name,
-    shortDescription: product.shortDescription,
-    description: product.description,
-    mrp,
-    sellingPrice,
-    discountPrice,
-    effectivePrice,
-    discountPercentage: calculateDiscountPercentage(mrp, effectivePrice),
-    gstPercentage: toNumber(product.gstPercentage) ?? 0,
-    stockQuantity: product.stockQuantity,
-    stockStatus: getStockStatus(product.stockQuantity),
-    isFeatured: product.isFeatured,
-    category: product.category,
-    brand: product.brand,
-    primaryImage: product.primaryImage,
-    createdAt: product.createdAt.toISOString(),
-    updatedAt: product.updatedAt.toISOString(),
-  }
-}
 
 export const getProducts = async (query: ProductQueryInput) => {
   const page = Number(query.page)
@@ -169,7 +39,7 @@ export const getProducts = async (query: ProductQueryInput) => {
   const { rows, total } = await findProducts(filters)
 
   const products = rows.map((row) =>
-    mapProductSummary({
+    mapCatalogProductSummary({
       id: row.id,
       slug: row.slug,
       sku: row.sku,
@@ -228,7 +98,7 @@ export const getProductBySlug = async (slug: string) => {
   const relatedProducts = await findRelatedProducts(product.categoryId, product.id)
 
   const detail: CatalogProductDetail = {
-    ...mapProductSummary({
+    ...mapCatalogProductSummary({
       id: product.id,
       slug: product.slug,
       sku: product.sku,
@@ -281,7 +151,7 @@ export const getProductBySlug = async (slug: string) => {
   return {
     product: detail,
     relatedProducts: relatedProducts.map((relatedProduct) =>
-      mapProductSummary({
+      mapCatalogProductSummary({
         id: relatedProduct.id,
         slug: relatedProduct.slug,
         sku: relatedProduct.sku,

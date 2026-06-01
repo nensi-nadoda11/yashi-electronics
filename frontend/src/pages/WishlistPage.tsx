@@ -1,107 +1,143 @@
 import { Heart, ShoppingCart, Trash2 } from 'lucide-react'
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { Container } from '../components/ui/Container'
 import { EmptyState } from '../components/ui/EmptyState'
+import { ErrorState } from '../components/ui/ErrorState'
+import { LoadingState } from '../components/ui/LoadingState'
 import { PageHeader } from '../components/ui/PageHeader'
 import { buttonStyles } from '../components/ui/button-styles'
-import { wishlistItems } from '../data/mock-data'
+import { useWishlist } from '../features/wishlist/useWishlist'
 import { formatCurrency } from '../utils/format'
 
+const fallbackImageUrl = 'https://placehold.co/900x900/e2e8f0/0f172a/png?text=Yashi+Electronics'
+
+const stockVariantMap = {
+  in_stock: 'success',
+  low_stock: 'warning',
+  out_of_stock: 'danger',
+} as const
+
+const stockLabelMap = {
+  in_stock: 'In Stock',
+  low_stock: 'Low Stock',
+  out_of_stock: 'Out of Stock',
+} as const
+
 export function WishlistPage() {
-  const [items, setItems] = useState(wishlistItems)
+  const {
+    items,
+    isLoading,
+    error,
+    fetchWishlist,
+    removeWishlistItem,
+    isUpdating,
+  } = useWishlist()
 
   return (
     <>
       <PageHeader
         eyebrow="Saved Items"
-        title="Keep products bookmarked for later decisions"
-        description="This wishlist screen is ready for future account sync, inventory alerts, and quick add-to-cart flows."
-        actions={
-          <Button
-            variant="outline"
-            onClick={() => setItems([])}
-            disabled={items.length === 0}
-          >
-            Preview empty wishlist
-          </Button>
-        }
+        title="Your wishlist"
+        description="Products you've saved for later."
       />
 
       <Container className="pb-16">
-        {items.length === 0 ? (
+        {isLoading ? (
+          <LoadingState
+            title="Loading wishlist"
+            description="Fetching your saved items."
+            cardCount={3}
+          />
+        ) : error && items.length === 0 ? (
+          <ErrorState
+            title="Unable to load wishlist"
+            description={error}
+            action={(
+              <Button variant="secondary" onClick={() => void fetchWishlist()}>
+                Try again
+              </Button>
+            )}
+          />
+        ) : items.length === 0 ? (
           <EmptyState
             icon={Heart}
             title="Your wishlist is empty"
-            description="Save products here to compare later. This placeholder is ready for customer account persistence in future modules."
+            description="Save products to see them here."
             action={
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <Link to="/products" className={buttonStyles('secondary', 'md')}>
-                  Explore products
-                </Link>
-                <Button variant="outline" onClick={() => setItems(wishlistItems)}>
-                  Restore demo wishlist
-                </Button>
-              </div>
+              <Link to="/products" className={buttonStyles('secondary', 'md')}>
+                Explore products
+              </Link>
             }
           />
         ) : (
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {items.map((product) => (
-              <Card key={product.id} className="overflow-hidden p-5">
+            {items.map((item) => (
+              <Card key={item.wishlistId} className="overflow-hidden p-5">
                 <div className="space-y-5">
-                  <div className="rounded-[28px] bg-[linear-gradient(135deg,#eff6ff_0%,#ffffff_55%,#dbeafe_100%)] p-5">
-                    <div className="min-h-[200px] rounded-[24px] border border-white/70 bg-white/80 p-5">
-                      <Badge variant="brand">{product.category}</Badge>
-                      <div className="mt-5 space-y-2">
-                        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-brand-600">
-                          {product.brand}
-                        </p>
-                        <p className="text-2xl font-bold text-slate-950">{product.name}</p>
-                        <p className="text-sm leading-6 text-slate-600">{product.shortDescription}</p>
-                      </div>
-                    </div>
+                  <div className="overflow-hidden rounded-[28px] bg-[linear-gradient(135deg,#eff6ff_0%,#ffffff_55%,#dbeafe_100%)]">
+                    <img
+                      src={item.product.primaryImage ?? fallbackImageUrl}
+                      alt={item.product.name}
+                      className="aspect-square w-full object-cover"
+                    />
                   </div>
 
                   <div className="space-y-4">
-                    <div className="flex items-end justify-between gap-4">
-                      <div>
-                        <p className="text-2xl font-extrabold text-slate-950">
-                          {formatCurrency(product.price)}
-                        </p>
-                        <p className="text-sm text-slate-500 line-through">
-                          {formatCurrency(product.mrp)}
-                        </p>
-                      </div>
-                      <Badge
-                        variant={product.stockStatus === 'In Stock' ? 'success' : 'warning'}
-                      >
-                        {product.stockStatus}
+                    <div className="flex items-center justify-between gap-3">
+                      <Badge variant="brand">{item.product.category}</Badge>
+                      <Badge variant={stockVariantMap[item.product.stockStatus]}>
+                        {stockLabelMap[item.product.stockStatus]}
                       </Badge>
                     </div>
 
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      <Button
-                        variant="secondary"
-                        onClick={() =>
-                          setItems((current) =>
-                            current.filter((entry) => entry.id !== product.id),
-                          )
-                        }
+                    <div className="space-y-2">
+                      {item.product.brand ? (
+                        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-brand-600">
+                          {item.product.brand}
+                        </p>
+                      ) : null}
+                      <p className="text-2xl font-bold text-slate-950">{item.product.name}</p>
+                      <p className="text-sm text-slate-500">SKU: {item.product.sku}</p>
+                    </div>
+
+                    <div className="flex items-end justify-between gap-4">
+                      <div>
+                        <p className="text-2xl font-extrabold text-slate-950">
+                          {formatCurrency(item.product.effectivePrice)}
+                        </p>
+                        <div className="flex items-center gap-2 text-sm text-slate-500">
+                          <span className="line-through">{formatCurrency(item.product.mrp)}</span>
+                          {item.product.discountPercentage > 0 ? (
+                            <span className="font-semibold text-emerald-600">
+                              {item.product.discountPercentage}% off
+                            </span>
+                          ) : null}
+                        </div>
+                      </div>
+                      <p className="text-sm text-slate-500">GST: {item.product.gstPercentage}%</p>
+                    </div>
+
+                    <div className="grid gap-3">
+                      <Link
+                        to={`/products/${item.product.slug}`}
+                        className={buttonStyles('outline', 'md')}
                       >
+                        View details
+                      </Link>
+                      <Button type="button" variant="secondary">
                         <ShoppingCart className="h-4 w-4" />
                         Move to Cart
                       </Button>
                       <Button
+                        type="button"
                         variant="outline"
-                        onClick={() =>
-                          setItems((current) =>
-                            current.filter((entry) => entry.id !== product.id),
-                          )
-                        }
+                        disabled={isUpdating(item.product.id)}
+                        onClick={() => {
+                          void removeWishlistItem(item.product.id)
+                        }}
                       >
                         <Trash2 className="h-4 w-4" />
                         Remove

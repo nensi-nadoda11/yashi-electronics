@@ -1,11 +1,13 @@
 import { Heart, Menu, Search, ShoppingCart, User, X } from 'lucide-react'
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
-import { cartItems, quickLinks, wishlistItems } from '../../data/mock-data'
 import { useAuth } from '../../features/auth/useAuth'
+import { useCart } from '../../features/cart/useCart'
+import { useWishlist } from '../../features/wishlist/useWishlist'
 import { cn } from '../../utils/cn'
 import { Container } from '../ui/Container'
 import { buttonStyles } from '../ui/button-styles'
+import { quickLinks } from '../../data/mock-data'
 
 const navLinks = quickLinks.filter((link) =>
   ['Home', 'Products', 'Wishlist', 'Cart', 'Orders'].includes(link.label),
@@ -20,6 +22,8 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const { customer, isAuthenticated, logout } = useAuth()
+  const { count: cartCount } = useCart()
+  const { count } = useWishlist()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const firstName = customer?.fullName.trim().split(/\s+/)[0] ?? 'Profile'
@@ -78,16 +82,20 @@ export function Header() {
             <NavLink to="/wishlist" className={buttonStyles('ghost', 'sm')}>
               <Heart className="h-4 w-4" />
               Wishlist
-              <span className="rounded-full bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-700">
-                {wishlistItems.length}
-              </span>
+              {isAuthenticated ? (
+                <span className="rounded-full bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-700">
+                  {count}
+                </span>
+              ) : null}
             </NavLink>
             <NavLink to="/cart" className={buttonStyles('ghost', 'sm')}>
               <ShoppingCart className="h-4 w-4" />
               Cart
-              <span className="rounded-full bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-700">
-                {cartItems.reduce((sum, item) => sum + item.quantity, 0)}
-              </span>
+              {isAuthenticated ? (
+                <span className="rounded-full bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-700">
+                  {cartCount}
+                </span>
+              ) : null}
             </NavLink>
             {isAuthenticated ? (
               <>

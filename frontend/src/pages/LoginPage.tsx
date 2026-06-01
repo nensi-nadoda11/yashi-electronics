@@ -63,8 +63,8 @@ export function LoginPage() {
     <>
       <PageHeader
         eyebrow="Customer Login"
-        title="Sign in to access orders, wishlist, and profile details"
-        description="Sign in with your email or mobile number to access your secure customer account."
+        title="Sign in to your account"
+        description="Use your email or mobile number to continue."
       />
 
       <Container className="pb-16">
@@ -74,9 +74,6 @@ export function LoginPage() {
               <KeyRound className="h-7 w-7" />
             </div>
             <h2 className="mt-6 text-3xl font-bold text-slate-950">Welcome back</h2>
-            <p className="mt-3 text-sm leading-7 text-slate-600">
-              Log in to manage your saved items, review past orders, and continue toward a streamlined checkout.
-            </p>
             <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
               <Input
                 id="login-identifier"
@@ -127,18 +124,15 @@ export function LoginPage() {
               </div>
               <div className="space-y-4">
                 <h3 className="text-3xl font-bold text-slate-950">
-                  Built for a reliable customer account experience
+                  Your account includes
                 </h3>
-                <p className="text-sm leading-7 text-slate-600">
-                  Secure sessions, password recovery, and protected account access now plug into this layout without changing the customer-facing theme.
-                </p>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 {[
-                  'Access your order history and tracking',
-                  'Save products to your wishlist across devices',
-                  'Manage profile details and addresses',
-                  'Prepare for future GST-ready checkout workflows',
+                  'Order history',
+                  'Saved wishlist items',
+                  'Profile access',
+                  'Secure sign-in',
                 ].map((item) => (
                   <div key={item} className="rounded-3xl border border-slate-200 bg-slate-50 p-5 text-sm leading-6 text-slate-600">
                     {item}

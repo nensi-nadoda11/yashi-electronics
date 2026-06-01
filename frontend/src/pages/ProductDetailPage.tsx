@@ -1,9 +1,10 @@
-import { Heart, ShoppingCart, Truck } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { AddToCartButton } from '../components/cart/AddToCartButton'
+import { QuantitySelector } from '../components/cart/QuantitySelector'
 import { ProductCard } from '../components/product/ProductCard'
+import { WishlistButton } from '../components/wishlist/WishlistButton'
 import { Badge } from '../components/ui/Badge'
-import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { Container } from '../components/ui/Container'
 import { ErrorState } from '../components/ui/ErrorState'
@@ -13,6 +14,7 @@ import { SectionTitle } from '../components/ui/SectionTitle'
 import { buttonStyles } from '../components/ui/button-styles'
 import { getProductBySlug } from '../features/catalog/catalog.api'
 import type { ProductDetail, ProductImage, ProductListItem } from '../features/catalog/catalog.types'
+import { useWishlist } from '../features/wishlist/useWishlist'
 import { getApiErrorMessage } from '../lib/api-client'
 import { formatCurrency } from '../utils/format'
 
@@ -32,9 +34,11 @@ const stockLabelMap = {
 
 export function ProductDetailPage() {
   const { id } = useParams()
+  const { refreshWishlistStatus } = useWishlist()
   const [product, setProduct] = useState<ProductDetail | null>(null)
   const [relatedProducts, setRelatedProducts] = useState<ProductListItem[]>([])
   const [selectedImage, setSelectedImage] = useState<ProductImage | null>(null)
+  const [selectedQuantity, setSelectedQuantity] = useState(1)
   const [imageFailed, setImageFailed] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -63,6 +67,8 @@ export function ProductDetailPage() {
         setProduct(data.product)
         setRelatedProducts(data.relatedProducts)
         setSelectedImage(data.product.images[0] ?? data.product.primaryImage ?? null)
+        setSelectedQuantity(1)
+        void refreshWishlistStatus([data.product.id])
       } catch (error) {
         if (!isMounted) {
           return
@@ -84,7 +90,7 @@ export function ProductDetailPage() {
     return () => {
       isMounted = false
     }
-  }, [id])
+  }, [id, refreshWishlistStatus])
 
   const galleryImages = useMemo(() => {
     if (!product) {
@@ -98,12 +104,21 @@ export function ProductDetailPage() {
         : []
   }, [product])
 
+  useEffect(() => {
+    if (!product) {
+      return
+    }
+
+    const maxQuantity = Math.max(1, product.stockQuantity)
+    setSelectedQuantity((current) => Math.min(Math.max(1, current), maxQuantity))
+  }, [product?.id, product?.stockQuantity])
+
   if (isLoading) {
     return (
       <Container className="py-12">
         <LoadingState
           title="Loading product details"
-          description="Preparing product images, specifications, and related catalogue items."
+          description="Preparing product details."
           cardCount={2}
         />
       </Container>
@@ -208,32 +223,32 @@ export function ProductDetailPage() {
               </div>
 
               <p className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-                GST: {product.gstPercentage}% applicable. Final invoice and checkout tax workflow will continue in later modules.
+                GST: {product.gstPercentage}%
               </p>
               <p className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
-                SKU: {product.sku} • Available quantity: {product.stockQuantity}
+                SKU: {product.sku} | Available: {product.stockQuantity}
               </p>
             </div>
 
             <Card className="p-6">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Button size="lg" disabled={product.stockStatus === 'out_of_stock'}>
-                  <ShoppingCart className="h-4 w-4" />
-                  Add to Cart
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="lg"
-                  title="Wishlist integration will be added in a later module"
-                >
-                  <Heart className="h-4 w-4" />
-                  Add to Wishlist
-                </Button>
-              </div>
-              <div className="mt-5 flex items-start gap-3 rounded-2xl bg-brand-50 px-4 py-4 text-sm text-brand-700">
-                <Truck className="mt-0.5 h-4 w-4 shrink-0" />
-                <span>Delivery timelines, serviceability, and installation workflows will be connected to future commerce modules.</span>
+              <div className="grid gap-4 sm:grid-cols-[minmax(0,160px)_minmax(0,1fr)]">
+                <QuantitySelector
+                  value={selectedQuantity}
+                  min={1}
+                  max={product.stockQuantity}
+                  disabled={product.stockStatus === 'out_of_stock'}
+                  onChange={setSelectedQuantity}
+                />
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <AddToCartButton
+                    productId={product.id}
+                    stockQuantity={product.stockQuantity}
+                    quantity={selectedQuantity}
+                    className="w-full"
+                    disabled={product.stockStatus === 'out_of_stock'}
+                  />
+                  <WishlistButton productId={product.id} variant="button" />
+                </div>
               </div>
             </Card>
 
@@ -262,8 +277,8 @@ export function ProductDetailPage() {
           <section className="space-y-8">
             <SectionTitle
               eyebrow="Related Products"
-              title="Customers also explore similar products"
-              description="Additional catalogue items from the same category are surfaced here to support browsing."
+              title="Related products"
+              description="Similar products from the same category."
             />
             <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
               {relatedProducts.map((entry) => (

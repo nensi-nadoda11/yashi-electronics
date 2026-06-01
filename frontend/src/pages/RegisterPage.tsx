@@ -86,8 +86,8 @@ export function RegisterPage() {
     <>
       <PageHeader
         eyebrow="Customer Registration"
-        title="Create your Yashi Electronics customer account"
-        description="Create a secure customer account for wishlist access, protected profile features, and future order history."
+        title="Create your account"
+        description="Register to save products and access your profile."
       />
 
       <Container className="pb-16">
@@ -171,13 +171,13 @@ export function RegisterPage() {
                 <BadgeCheck className="h-7 w-7" />
               </div>
               <h3 className="text-3xl font-bold text-slate-950">
-                Account creation that scales with future commerce features
+                What you get
               </h3>
               <div className="space-y-4">
                 {[
-                  'Create a persistent secure session immediately after successful registration.',
-                  'Support password reset, profile access, and protected routes from the same account foundation.',
-                  'Keep the registration experience clean, lightweight, and mobile friendly.',
+                  'Instant secure sign-in after registration',
+                  'Wishlist and profile access',
+                  'Password reset support',
                 ].map((item) => (
                   <div key={item} className="rounded-3xl border border-slate-200 bg-slate-50 p-5 text-sm leading-7 text-slate-600">
                     {item}

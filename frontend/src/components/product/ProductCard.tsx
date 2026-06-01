@@ -1,11 +1,12 @@
-import { ArrowRight, Heart, ShoppingCart } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { ProductListItem } from '../../features/catalog/catalog.types'
 import type { Product } from '../../types/store'
 import { calculateDiscountPercentage, formatCurrency } from '../../utils/format'
+import { AddToCartButton } from '../cart/AddToCartButton'
+import { WishlistButton } from '../wishlist/WishlistButton'
 import { Badge } from '../ui/Badge'
-import { Button } from '../ui/Button'
 import { Card } from '../ui/Card'
 import { buttonStyles } from '../ui/button-styles'
 import { cn } from '../../utils/cn'
@@ -53,16 +54,9 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="flex h-full flex-col gap-5">
         <div className="relative overflow-hidden rounded-[28px] bg-[linear-gradient(135deg,#eff6ff_0%,#ffffff_55%,#dbeafe_100%)]">
           <div className="absolute right-4 top-4 z-10">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              aria-label={`Wishlist for ${product.name} coming soon`}
-              title="Wishlist integration will be added in a later module"
-              className="h-10 w-10 rounded-full border-white/70 bg-white/85 p-0 text-slate-600 hover:text-rose-500"
-            >
-              <Heart className="h-4 w-4" />
-            </Button>
+            {'id' in product && typeof product.id === 'string' ? (
+              <WishlistButton productId={product.id} />
+            ) : null}
           </div>
           <img
             src={imageUrl}
@@ -91,9 +85,9 @@ export function ProductCard({ product }: ProductCardProps) {
             >
               {product.name}
             </Link>
-            <p className="line-clamp-2 text-sm leading-6 text-slate-600">
-              {description}
-            </p>
+            {description ? (
+              <p className="line-clamp-2 text-sm leading-6 text-slate-600">{description}</p>
+            ) : null}
           </div>
 
           <div className="mt-auto space-y-4">
@@ -117,16 +111,13 @@ export function ProductCard({ product }: ProductCardProps) {
                 View Details
                 <ArrowRight className="h-4 w-4" />
               </Link>
-              <Button
-                type="button"
-                size="sm"
+              <AddToCartButton
+                productId={product.id}
+                stockQuantity={isCatalogProduct ? product.stockQuantity : 0}
+                className="flex-1"
+                variant="secondary"
                 disabled={stockBadgeLabel === 'Out of Stock'}
-                title="Cart integration will be added in a later module"
-                className="flex-1 justify-center"
-              >
-                <ShoppingCart className="h-4 w-4" />
-                Add to Cart
-              </Button>
+              />
             </div>
           </div>
         </div>

@@ -12,6 +12,8 @@ import { LoadingState } from '../components/ui/LoadingState'
 import { PageHeader } from '../components/ui/PageHeader'
 import { buttonStyles } from '../components/ui/button-styles'
 import { getBrands, getCategories, getProducts } from '../features/catalog/catalog.api'
+import { useAuth } from '../features/auth/useAuth'
+import { useWishlist } from '../features/wishlist/useWishlist'
 import type {
   Brand,
   Category,
@@ -241,6 +243,8 @@ const updateSearchParams = (
 
 export function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
+  const { isAuthenticated } = useAuth()
+  const { refreshWishlistStatus } = useWishlist()
   const query = useMemo(() => buildProductsQuery(searchParams), [searchParams])
   const [searchInput, setSearchInput] = useState(query.search ?? '')
   const [categories, setCategories] = useState<Category[]>([])
@@ -336,6 +340,14 @@ export function ProductsPage() {
     }
   }, [query])
 
+  useEffect(() => {
+    if (!isAuthenticated || products.length === 0) {
+      return
+    }
+
+    void refreshWishlistStatus(products.map((product) => product.id))
+  }, [isAuthenticated, products, refreshWishlistStatus])
+
   const activeCategoryName =
     categories.find((category) => category.slug === query.category)?.name ?? 'All'
   const activeBrandName =
@@ -416,8 +428,8 @@ export function ProductsPage() {
     <>
       <PageHeader
         eyebrow="Product Catalog"
-        title="Browse electronics with real catalogue search and filters"
-        description="Search, sort, and filter customer products without disturbing the existing storefront theme."
+        title="Browse electronics"
+        description="Search, sort, and filter the catalogue."
         actions={
           <button
             type="button"
@@ -508,7 +520,7 @@ export function ProductsPage() {
             {isLoading ? (
               <LoadingState
                 title="Loading products"
-                description="Fetching the latest product catalogue and applying your selected filters."
+                description="Fetching the catalogue."
                 cardCount={6}
               />
             ) : errorMessage ? (
@@ -564,7 +576,7 @@ export function ProductsPage() {
               <EmptyState
                 icon={Search}
                 title="No products matched your filters"
-                description="Try a different search term, broaden your price range, or clear the current filters."
+                description="Try a different search or clear the filters."
                 action={(
                   <Button variant="secondary" onClick={clearFilters}>
                     Clear filters

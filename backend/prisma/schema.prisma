@@ -119,6 +119,8 @@ model Wishlist {
   product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([customerId, productId])
+  @@index([customerId])
+  @@index([productId])
 }
 
 model Cart {
@@ -141,6 +143,8 @@ model CartItem {
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([cartId, productId])
+  @@index([cartId])
+  @@index([productId])
 }
 
 model CustomerAddress {
