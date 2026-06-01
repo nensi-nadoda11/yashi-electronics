@@ -20,10 +20,10 @@ export function LoadingState({
         <LoaderCircle className="h-5 w-5 animate-spin" />
         <p className="font-semibold">{title}</p>
       </div>
-      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         {Array.from({ length: cardCount }).map((_, index) => (
           <Card key={index} className="animate-pulse space-y-4 p-5">
-            <div className="h-52 rounded-3xl bg-slate-200" />
+            <div className="h-44 rounded-3xl bg-slate-200" />
             <div className="h-4 w-24 rounded-full bg-slate-200" />
             <div className="h-6 w-3/4 rounded-full bg-slate-200" />
             <div className="h-4 w-full rounded-full bg-slate-200" />

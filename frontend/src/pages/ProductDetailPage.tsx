@@ -145,26 +145,25 @@ export function ProductDetailPage() {
     <>
       <PageHeader
         eyebrow={product.category.name}
-        title={product.name}
-        description={product.shortDescription ?? product.description ?? 'Product details'}
+        title="Product Details"
       />
 
       <Container className="space-y-12 pb-16">
-        <section className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
+        <section className="grid gap-8 lg:grid-cols-[0.84fr_1.16fr]">
           <div className="space-y-4">
-            <Card className="overflow-hidden p-6">
-              <div className="overflow-hidden rounded-[32px] bg-[linear-gradient(135deg,#eff6ff_0%,#ffffff_55%,#dbeafe_100%)]">
+            <Card className="overflow-hidden p-4">
+              <div className="overflow-hidden rounded-[24px] bg-[linear-gradient(135deg,#eff6ff_0%,#ffffff_55%,#dbeafe_100%)]">
                 <img
                   src={!imageFailed ? selectedImage?.imageUrl ?? fallbackImageUrl : fallbackImageUrl}
                   alt={selectedImage?.altText ?? product.name}
                   onError={() => setImageFailed(true)}
-                  className="aspect-square w-full object-cover"
+                  className="aspect-[5/4] w-full object-cover"
                 />
               </div>
             </Card>
 
             {galleryImages.length > 0 ? (
-              <div className="grid grid-cols-3 gap-4 sm:grid-cols-4">
+              <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4">
                 {galleryImages.map((image) => (
                   <button
                     key={image.id}
@@ -174,7 +173,7 @@ export function ProductDetailPage() {
                       setSelectedImage(image)
                       setImageFailed(false)
                     }}
-                    className={`overflow-hidden rounded-[24px] border p-1 transition ${
+                    className={`overflow-hidden rounded-[18px] border p-1 transition ${
                       selectedImage?.id === image.id
                         ? 'border-brand-300 bg-brand-50'
                         : 'border-slate-200 bg-white hover:border-slate-300'
@@ -183,7 +182,7 @@ export function ProductDetailPage() {
                     <img
                       src={image.imageUrl}
                       alt={image.altText ?? product.name}
-                      className="aspect-square w-full rounded-[20px] object-cover"
+                      className="aspect-square w-full rounded-[16px] object-cover"
                     />
                   </button>
                 ))}
@@ -214,25 +213,29 @@ export function ProductDetailPage() {
                   <p className="text-4xl font-extrabold text-slate-950">
                     {formatCurrency(product.effectivePrice)}
                   </p>
-                  <p className="mt-1 text-sm text-slate-500">
+                </div>
+                <div className="flex flex-wrap items-center gap-3 pb-1">
+                  <p className="text-sm text-slate-500">
                     MRP <span className="line-through">{formatCurrency(product.mrp)}</span>
                   </p>
+                  {product.discountPercentage > 0 ? (
+                    <Badge variant="success">{product.discountPercentage}% savings</Badge>
+                  ) : null}
                 </div>
-                {product.discountPercentage > 0 ? (
-                  <Badge variant="success">{product.discountPercentage}% savings</Badge>
-                ) : null}
               </div>
 
-              <p className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-                GST: {product.gstPercentage}%
-              </p>
-              <p className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
-                SKU: {product.sku} | Available: {product.stockQuantity}
-              </p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <p className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                  GST: {product.gstPercentage}%
+                </p>
+                <p className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
+                  SKU: {product.sku} | Available: {product.stockQuantity}
+                </p>
+              </div>
             </div>
 
-            <Card className="p-6">
-              <div className="grid gap-4 sm:grid-cols-[minmax(0,160px)_minmax(0,1fr)]">
+            <Card className="p-5">
+              <div className="flex items-center gap-3">
                 <QuantitySelector
                   value={selectedQuantity}
                   min={1}
@@ -240,28 +243,16 @@ export function ProductDetailPage() {
                   disabled={product.stockStatus === 'out_of_stock'}
                   onChange={setSelectedQuantity}
                 />
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid flex-1 gap-3 sm:grid-cols-2">
                   <AddToCartButton
                     productId={product.id}
                     stockQuantity={product.stockQuantity}
                     quantity={selectedQuantity}
-                    className="w-full"
+                    className="h-12 w-full"
                     disabled={product.stockStatus === 'out_of_stock'}
                   />
-                  <WishlistButton productId={product.id} variant="button" />
+                  <WishlistButton productId={product.id} variant="button" className="w-full" />
                 </div>
-              </div>
-            </Card>
-
-            <Card className="p-6">
-              <h2 className="text-xl font-bold text-slate-950">Specifications</h2>
-              <div className="mt-5 divide-y divide-slate-100">
-                {product.specifications.map((specification) => (
-                  <div key={specification.id} className="grid gap-2 py-4 sm:grid-cols-[180px_minmax(0,1fr)]">
-                    <p className="text-sm font-semibold text-slate-700">{specification.name}</p>
-                    <p className="text-sm leading-6 text-slate-600">{specification.value}</p>
-                  </div>
-                ))}
               </div>
             </Card>
 

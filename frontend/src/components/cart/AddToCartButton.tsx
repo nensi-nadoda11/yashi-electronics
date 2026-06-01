@@ -1,4 +1,4 @@
-import { ShoppingCart } from 'lucide-react'
+import { LoaderCircle, ShoppingCart } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../features/auth/useAuth'
 import { useCart } from '../../features/cart/useCart'
@@ -52,10 +52,15 @@ export function AddToCartButton({
       variant={variant}
       disabled={disabled || isOutOfStock || isPending}
       onClick={() => void handleClick()}
+      aria-label={isOutOfStock ? 'Out of Stock' : isPending ? 'Adding to cart' : 'Add to Cart'}
+      title={isOutOfStock ? 'Out of Stock' : isPending ? 'Adding to cart' : 'Add to Cart'}
       className={cn(className)}
     >
-      <ShoppingCart className="h-4 w-4" />
-      {isOutOfStock ? 'Out of Stock' : isPending ? 'Adding...' : 'Add to Cart'}
+      {isPending ? (
+        <LoaderCircle className="h-4 w-4 animate-spin" />
+      ) : (
+        <ShoppingCart className="h-4 w-4" />
+      )}
     </Button>
   )
 }

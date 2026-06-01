@@ -8,16 +8,13 @@ import {
   Grid2x2,
   Headphones,
   MonitorSmartphone,
-  Percent,
   RotateCcw,
   ShieldCheck,
-  ShoppingBag,
-  Sparkles,
   Speaker,
   Truck,
 } from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
-import { useMemo, useRef, useState } from 'react'
+import { Sparkles } from 'lucide-react'
+import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ProductCard } from '../components/product/ProductCard'
 import { Badge } from '../components/ui/Badge'
@@ -25,10 +22,10 @@ import { Card } from '../components/ui/Card'
 import { Container } from '../components/ui/Container'
 import { SectionTitle } from '../components/ui/SectionTitle'
 import { buttonStyles } from '../components/ui/button-styles'
-import heroArt from '../assets/hero.png'
+import firstHeroImage from '../assets/first image.png'
+import secondHeroImage from '../assets/second image.png'
+import thirdHeroImage from '../assets/third image.png'
 import { products as showcaseProducts } from '../data/mock-data'
-import type { Product } from '../types/store'
-import { calculateDiscountPercentage, formatCurrency } from '../utils/format'
 
 type HeroSlide = {
   eyebrow: string
@@ -39,14 +36,10 @@ type HeroSlide = {
     label: string
     href: string
   }
-  secondaryAction: {
-    label: string
-    href: string
-  }
   accentClass: string
   featureClass: string
-  productA: Product
-  productB: Product
+  image: string
+  imageAlt: string
 }
 
 const heroSlides: HeroSlide[] = [
@@ -59,14 +52,10 @@ const heroSlides: HeroSlide[] = [
       label: 'Shop Now',
       href: '/products',
     },
-    secondaryAction: {
-      label: 'Explore Categories',
-      href: '#categories',
-    },
     accentClass: 'from-brand-50 via-white to-brand-100',
     featureClass: 'text-brand-700',
-    productA: showcaseProducts[0],
-    productB: showcaseProducts[4],
+    image: firstHeroImage,
+    imageAlt: 'Electronics components collage',
   },
   {
     eyebrow: 'New arrivals, ready to ship',
@@ -77,14 +66,10 @@ const heroSlides: HeroSlide[] = [
       label: 'View New Arrivals',
       href: '/products?sort=newest',
     },
-    secondaryAction: {
-      label: 'Best Sellers',
-      href: '#best-sellers',
-    },
     accentClass: 'from-emerald-50 via-white to-sky-100',
     featureClass: 'text-emerald-700',
-    productA: showcaseProducts[2],
-    productB: showcaseProducts[5],
+    image: secondHeroImage,
+    imageAlt: 'Electronics bulk and business supplies collage',
   },
   {
     eyebrow: 'Bulk orders and special offers',
@@ -95,14 +80,10 @@ const heroSlides: HeroSlide[] = [
       label: 'View Offers',
       href: '/products?sort=discount_high_to_to',
     },
-    secondaryAction: {
-      label: 'Bulk Orders',
-      href: '#offers',
-    },
     accentClass: 'from-amber-50 via-white to-brand-100',
     featureClass: 'text-amber-700',
-    productA: showcaseProducts[1],
-    productB: showcaseProducts[3],
+    image: thirdHeroImage,
+    imageAlt: 'Electronics offer and procurement collage',
   },
 ]
 
@@ -159,106 +140,11 @@ const trustCards = [
   },
 ]
 
-const formatStockLabel = (product: Product) => product.stockStatus
-
-function HeroCallout({ product, accentClass }: { product: Product; accentClass: string }) {
-  const discount = calculateDiscountPercentage(product.mrp, product.price)
-
-  return (
-    <div className="rounded-[28px] border border-white/70 bg-white/95 p-4 shadow-[0_24px_60px_-35px_rgba(15,23,42,0.45)] backdrop-blur">
-      <div className="flex items-center justify-between gap-3">
-        <Badge
-          variant={
-            product.stockStatus === 'In Stock'
-              ? 'success'
-              : product.stockStatus === 'Limited Stock'
-                ? 'warning'
-                : 'danger'
-          }
-          className="px-2.5 py-0.5 text-[10px]"
-        >
-          {formatStockLabel(product)}
-        </Badge>
-        <span className={`text-[10px] font-semibold uppercase tracking-[0.24em] ${accentClass}`}>
-          {product.brand}
-        </span>
-      </div>
-      <p className="mt-3 line-clamp-2 text-sm font-semibold text-slate-950">{product.name}</p>
-      <div className="mt-3 flex items-end justify-between gap-3">
-        <div>
-          <p className="text-lg font-extrabold text-slate-950">{formatCurrency(product.price)}</p>
-          <p className="text-xs text-slate-500 line-through">{formatCurrency(product.mrp)}</p>
-        </div>
-        {discount > 0 ? (
-          <span className="rounded-full bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700">
-            {discount}% off
-          </span>
-        ) : null}
-      </div>
-    </div>
-  )
-}
-
-function PromoCard({
-  title,
-  text,
-  action,
-  icon: Icon,
-  toneClass,
-}: {
-  title: string
-  text: string
-  action: {
-    label: string
-    href: string
-  }
-  icon: LucideIcon
-  toneClass: string
-}) {
-  return (
-    <Card className={`overflow-hidden p-5 ${toneClass}`}>
-      <div className="flex h-full items-center justify-between gap-5">
-        <div className="max-w-sm space-y-3">
-          <div className="inline-flex h-14 w-14 items-center justify-center rounded-3xl bg-white/90 text-brand-700 shadow-sm">
-            <Icon className="h-7 w-7" />
-          </div>
-          <div className="space-y-1">
-            <h3 className="text-2xl font-bold tracking-tight text-slate-950">{title}</h3>
-            <p className="text-sm leading-6 text-slate-600">{text}</p>
-          </div>
-          <Link to={action.href} className={buttonStyles('ghost', 'sm')}>
-            {action.label}
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-
-        <div className="relative flex h-28 w-28 shrink-0 items-center justify-center rounded-[34px] bg-white/60">
-          <div className="absolute inset-4 rounded-[28px] bg-white/70" />
-          <Icon className="relative h-12 w-12 text-brand-600" />
-        </div>
-      </div>
-    </Card>
-  )
-}
-
 export function HomePage() {
   const [activeSlide, setActiveSlide] = useState(0)
   const brandTrackRef = useRef<HTMLDivElement | null>(null)
 
   const slide = heroSlides[activeSlide]
-
-  const sectionLinks = useMemo(
-    () => [
-      { label: 'Home', href: '#' },
-      { label: 'Products', href: '/products' },
-      { label: 'New Arrivals', href: '/products?sort=newest' },
-      { label: 'Best Sellers', href: '#best-sellers' },
-      { label: 'Bulk Orders', href: '#offers' },
-      { label: 'Offers', href: '#offers' },
-      { label: 'Contact Us', href: '#footer' },
-    ],
-    [],
-  )
 
   const scrollBrandTrack = (offset: number) => {
     brandTrackRef.current?.scrollBy({ left: offset, behavior: 'smooth' })
@@ -267,32 +153,7 @@ export function HomePage() {
   return (
     <main className="pb-6">
       <Container className="pt-4">
-        <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <Link
-            to="/products"
-            className={buttonStyles('secondary', 'lg')}
-          >
-            <Grid2x2 className="h-4 w-4" />
-            Shop by Categories
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-
-          <nav className="scrollbar-hidden flex items-center gap-6 overflow-x-auto pb-1 text-sm font-semibold text-slate-700">
-            {sectionLinks.map((link) =>
-              link.href.startsWith('/') ? (
-                <Link key={link.label} to={link.href} className="whitespace-nowrap transition hover:text-brand-700">
-                  {link.label}
-                </Link>
-              ) : (
-                <a key={link.label} href={link.href} className="whitespace-nowrap transition hover:text-brand-700">
-                  {link.label}
-                </a>
-              ),
-            )}
-          </nav>
-        </div>
-
-        <section className="relative overflow-hidden rounded-[36px] border border-white/70 bg-[linear-gradient(135deg,#eef4ff_0%,#ffffff_48%,#dbeafe_100%)] px-4 py-4 shadow-[0_24px_80px_-45px_rgba(15,23,42,0.28)] sm:px-6 sm:py-6 lg:px-8 lg:py-8">
+        <section className="relative overflow-hidden rounded-[36px] border border-white/70 bg-[linear-gradient(135deg,#eef4ff_0%,#ffffff_48%,#dbeafe_100%)] px-4 py-3 shadow-[0_24px_80px_-45px_rgba(15,23,42,0.28)] sm:px-6 sm:py-4 lg:px-8 lg:py-5">
           <button
             type="button"
             aria-label="Previous slide"
@@ -311,8 +172,8 @@ export function HomePage() {
             <ChevronRight className="h-5 w-5" />
           </button>
 
-          <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-            <div className="space-y-7 animate-fade-up">
+          <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+            <div className="space-y-5 animate-fade-up">
               <Badge variant="brand" className="w-fit">
                 {slide.eyebrow}
               </Badge>
@@ -332,15 +193,6 @@ export function HomePage() {
                   {slide.primaryAction.label}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
-                {slide.secondaryAction.href.startsWith('#') ? (
-                  <a href={slide.secondaryAction.href} className={buttonStyles('outline', 'lg')}>
-                    {slide.secondaryAction.label}
-                  </a>
-                ) : (
-                  <Link to={slide.secondaryAction.href} className={buttonStyles('outline', 'lg')}>
-                    {slide.secondaryAction.label}
-                  </Link>
-                )}
               </div>
 
               <div className="flex flex-wrap gap-3">
@@ -380,17 +232,11 @@ export function HomePage() {
 
             <div className="relative mx-auto w-full max-w-[620px]">
               <div className={`absolute inset-8 rounded-full bg-gradient-to-br ${slide.accentClass}`} />
-              <div className="absolute left-0 top-8 z-10 w-[46%]">
-                <HeroCallout product={slide.productA} accentClass={slide.featureClass} />
-              </div>
-              <div className="absolute bottom-6 right-0 z-10 w-[44%]">
-                <HeroCallout product={slide.productB} accentClass={slide.featureClass} />
-              </div>
-              <div className="relative z-0 flex items-center justify-center py-8">
+              <div className="relative z-0 overflow-hidden rounded-[34px] border border-white/70 bg-white/80 p-4 shadow-[0_35px_90px_-50px_rgba(15,23,42,0.35)] backdrop-blur">
                 <img
-                  src={heroArt}
-                  alt="Electronics hero visual"
-                  className="w-[78%] max-w-[500px] drop-shadow-[0_35px_55px_rgba(37,99,235,0.20)]"
+                  src={slide.image}
+                  alt={slide.imageAlt}
+                  className="h-[360px] w-full object-contain object-center sm:h-[410px] lg:h-[470px]"
                 />
               </div>
             </div>
@@ -483,37 +329,11 @@ export function HomePage() {
             }
           />
 
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {showcaseProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
-        </Container>
-      </section>
-
-      <section id="offers" className="py-8 sm:py-10">
-        <Container className="grid gap-4 lg:grid-cols-3">
-          <PromoCard
-            title="New Arrivals"
-            text="Fresh electronic components for the latest builds."
-            action={{ label: 'Explore Now', href: '/products?sort=newest' }}
-            icon={Sparkles}
-            toneClass="bg-[linear-gradient(135deg,#eefaf4_0%,#ffffff_60%,#dff4e4_100%)]"
-          />
-          <PromoCard
-            title="Bulk Orders"
-            text="Special pricing for larger purchases and procurement."
-            action={{ label: 'Get Quote', href: '/products' }}
-            icon={ShoppingBag}
-            toneClass="bg-[linear-gradient(135deg,#fff6e8_0%,#ffffff_60%,#fdecc8_100%)]"
-          />
-          <PromoCard
-            title="Special Offers"
-            text="Discounted picks from the current product range."
-            action={{ label: 'View Offers', href: '/products?sort=discount_high_to_low' }}
-            icon={Percent}
-            toneClass="bg-[linear-gradient(135deg,#eef4ff_0%,#ffffff_60%,#dbeafe_100%)]"
-          />
         </Container>
       </section>
 

@@ -13,6 +13,7 @@ frontend/node_modules/
 /public/
 
 # Logs
+# Logs
 logs/
 *.log
 

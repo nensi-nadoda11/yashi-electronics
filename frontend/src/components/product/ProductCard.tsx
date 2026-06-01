@@ -1,4 +1,4 @@
-import { ArrowRight } from 'lucide-react'
+import { Eye } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { ProductListItem } from '../../features/catalog/catalog.types'
@@ -25,9 +25,6 @@ export function ProductCard({ product }: ProductCardProps) {
   const categoryName = isCatalogProduct ? product.category.name : product.category
   const productHref = isCatalogProduct ? `/products/${product.slug}` : `/products/${product.id}`
   const effectivePrice = isCatalogProduct ? product.effectivePrice : product.price
-  const description = isCatalogProduct
-    ? product.shortDescription ?? product.description
-    : product.description
   const stockStatus = isCatalogProduct ? product.stockStatus : product.stockStatus
   const discount = isCatalogProduct
     ? product.discountPercentage
@@ -50,9 +47,9 @@ export function ProductCard({ product }: ProductCardProps) {
       : fallbackImageUrl
 
   return (
-    <Card className="group overflow-hidden p-5 transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_70px_-30px_rgba(15,23,42,0.35)]">
-      <div className="flex h-full flex-col gap-5">
-        <div className="relative overflow-hidden rounded-[28px] bg-[linear-gradient(135deg,#eff6ff_0%,#ffffff_55%,#dbeafe_100%)]">
+    <Card className="group overflow-hidden p-4 transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_70px_-30px_rgba(15,23,42,0.35)]">
+      <div className="flex h-full flex-col gap-4">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-[24px] bg-[linear-gradient(135deg,#eff6ff_0%,#ffffff_55%,#dbeafe_100%)]">
           <div className="absolute right-4 top-4 z-10">
             {'id' in product && typeof product.id === 'string' ? (
               <WishlistButton productId={product.id} />
@@ -63,7 +60,7 @@ export function ProductCard({ product }: ProductCardProps) {
             alt={isCatalogProduct ? product.primaryImage?.altText ?? product.name : product.name}
             loading="lazy"
             onError={() => setImageFailed(true)}
-            className="aspect-square w-full object-cover"
+            className="h-full w-full object-cover"
           />
         </div>
 
@@ -85,36 +82,39 @@ export function ProductCard({ product }: ProductCardProps) {
             >
               {product.name}
             </Link>
-            {description ? (
-              <p className="line-clamp-2 text-sm leading-6 text-slate-600">{description}</p>
-            ) : null}
           </div>
 
           <div className="mt-auto space-y-4">
             <div>
-              <p className="text-2xl font-extrabold text-slate-950">
-                {formatCurrency(effectivePrice)}
-              </p>
-              <p className="flex items-center gap-2 text-sm text-slate-500">
-                <span className="line-through">{formatCurrency(product.mrp)}</span>
+              <div className="flex flex-wrap items-end gap-x-3 gap-y-1">
+                <p className="text-2xl font-extrabold text-slate-950">
+                  {formatCurrency(effectivePrice)}
+                </p>
+                <span className="text-sm text-slate-500 line-through">
+                  {formatCurrency(product.mrp)}
+                </span>
                 {discount > 0 ? (
-                  <span className="font-semibold text-emerald-600">{discount}% off</span>
+                  <span className="text-sm font-semibold text-emerald-600">{discount}% off</span>
                 ) : null}
-              </p>
+              </div>
               {'gstPercentage' in product ? (
                 <p className="mt-2 text-xs text-slate-500">GST: {product.gstPercentage}%</p>
               ) : null}
             </div>
 
             <div className="flex gap-3">
-              <Link to={productHref} className={cn(buttonStyles('outline', 'sm'), 'flex-1 justify-center')}>
-                View Details
-                <ArrowRight className="h-4 w-4" />
+              <Link
+                to={productHref}
+                aria-label="View details"
+                title="View details"
+                className={cn(buttonStyles('outline', 'sm'), 'flex-1 justify-center')}
+              >
+                <Eye className="h-4 w-4" />
               </Link>
               <AddToCartButton
                 productId={product.id}
                 stockQuantity={isCatalogProduct ? product.stockQuantity : 0}
-                className="flex-1"
+                className="flex-1 justify-center"
                 variant="secondary"
                 disabled={stockBadgeLabel === 'Out of Stock'}
               />

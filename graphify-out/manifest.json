@@ -344,16 +344,16 @@
     "hash": "64a34a1d7678bf5b9077c92d58665d03"
   },
   "E:\\yashi_electronics\\frontend\\src\\components\\layout\\Footer.tsx": {
-    "mtime": 1780305525.1110744,
-    "hash": "e5a447c0320b2411ae1d8b2d177cbe3b"
+    "mtime": 1780311069.2868273,
+    "hash": "90299b6a32793926aa4fb3638fbd5a40"
   },
   "E:\\yashi_electronics\\frontend\\src\\components\\layout\\Header.tsx": {
     "mtime": 1780305437.9329956,
     "hash": "3cd10c8cee41634904137f665ac4f9db"
   },
   "E:\\yashi_electronics\\frontend\\src\\components\\product\\ProductCard.tsx": {
-    "mtime": 1780056004.558719,
-    "hash": "3abe7b663629bab291c34bd162168e5d"
+    "mtime": 1780313521.830451,
+    "hash": "c262b0946cb63c593b0e15d26f36c22c"
   },
   "E:\\yashi_electronics\\frontend\\src\\components\\ui\\Badge.tsx": {
     "mtime": 1780291666.0450835,
@@ -388,8 +388,8 @@
     "hash": "e68890fa16336462b6644a9c060ceb28"
   },
   "E:\\yashi_electronics\\frontend\\src\\components\\ui\\LoadingState.tsx": {
-    "mtime": 1780305437.6042132,
-    "hash": "ff99372b62fb655914eb3ba6ba8d4de5"
+    "mtime": 1780313381.7851837,
+    "hash": "1d9a341ae689cc9182355139be17636e"
   },
   "E:\\yashi_electronics\\frontend\\src\\components\\ui\\PageHeader.tsx": {
     "mtime": 1780305437.2538588,
@@ -548,8 +548,8 @@
     "hash": "470d4b1d76947f443f8e6c7175bfd54f"
   },
   "E:\\yashi_electronics\\frontend\\src\\pages\\HomePage.tsx": {
-    "mtime": 1780305467.611977,
-    "hash": "f48b45c4122c72d27287689290a5b825"
+    "mtime": 1780313325.1310382,
+    "hash": "d6053b7807d07adbc6ef136fc7a11969"
   },
   "E:\\yashi_electronics\\frontend\\src\\pages\\index.ts": {
     "mtime": 1780291898.9963417,
@@ -580,8 +580,8 @@
     "hash": "ece54abdaa4e87bbad50005b53234854"
   },
   "E:\\yashi_electronics\\frontend\\src\\pages\\ProductsPage.tsx": {
-    "mtime": 1780308558.5791051,
-    "hash": "8580d6e7e8fb777db293303c40cfadd9"
+    "mtime": 1780313299.308525,
+    "hash": "a578c12e6769b67c1fb349cf0352e499"
   },
   "E:\\yashi_electronics\\frontend\\src\\pages\\ProfilePage.tsx": {
     "mtime": 1780291925.057481,
@@ -592,8 +592,8 @@
     "hash": "5179f5202961a5b0ba5d9d4a9678bc44"
   },
   "E:\\yashi_electronics\\frontend\\src\\pages\\WishlistPage.tsx": {
-    "mtime": 1780290685.7431147,
-    "hash": "026c2b0fb6a04ba8e6f9de4e3b0fdfa2"
+    "mtime": 1780313352.586028,
+    "hash": "043d38a1017ea88ae156cc868a0a6ad1"
   },
   "E:\\yashi_electronics\\frontend\\src\\routes\\AppRouter.tsx": {
     "mtime": 1780291896.2189736,
