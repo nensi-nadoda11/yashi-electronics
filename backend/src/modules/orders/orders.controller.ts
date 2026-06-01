@@ -2,19 +2,34 @@ import type { RequestHandler } from 'express'
 import { asyncHandler } from '../../utils/async-handler'
 import { successResponse } from '../../utils/api-response'
 import { ordersService } from './orders.service'
+import { ordersQuerySchema } from './orders.schemas'
 import type { OrdersQueryInput } from './orders.types'
 
 export const getOrdersController: RequestHandler = asyncHandler(async (request, response) => {
-  const data = await ordersService.getOrders({
+  const query = ordersQuerySchema.parse(request.query)
+  const status = query.status
+  const paymentStatus = query.paymentStatus
+  const search = query.search
+
+  const input: OrdersQueryInput = {
     customerId: request.customer!.id,
-    page: request.query.page as number,
-    limit: request.query.limit as number,
-    ...(request.query.status ? { status: request.query.status as OrdersQueryInput['status'] } : {}),
-    ...(request.query.paymentStatus
-      ? { paymentStatus: request.query.paymentStatus as OrdersQueryInput['paymentStatus'] }
-      : {}),
-    ...(request.query.search ? { search: request.query.search as string } : {}),
-  })
+    page: query.page,
+    limit: query.limit,
+  }
+
+  if (status !== undefined) {
+    input.status = status
+  }
+
+  if (paymentStatus !== undefined) {
+    input.paymentStatus = paymentStatus
+  }
+
+  if (search !== undefined) {
+    input.search = search
+  }
+
+  const data = await ordersService.getOrders(input)
 
   response.status(200).json(successResponse('Orders fetched successfully', data))
 })

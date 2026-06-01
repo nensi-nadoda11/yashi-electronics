@@ -1,10 +1,21 @@
 import { Prisma, PrismaClient } from '@prisma/client'
 import { prisma } from '../../db/prisma'
+import { AppError } from '../../utils/app-error'
 import type { OrdersQueryInput } from './orders.types'
 
 type DbClient = PrismaClient | Prisma.TransactionClient
 
 const getClient = (client: DbClient = prisma) => client
+
+const normalizePaginationValue = (value: number) => {
+  const normalizedValue = Number(value)
+
+  if (!Number.isFinite(normalizedValue)) {
+    throw new AppError('Invalid pagination value', 400)
+  }
+
+  return normalizedValue
+}
 
 const orderListInclude = Prisma.validator<Prisma.OrderInclude>()({
   items: {
@@ -91,6 +102,9 @@ export const ordersRepository = {
   },
 
   findOrdersByCustomerId(input: OrdersQueryInput, client: DbClient = prisma) {
+    const page = normalizePaginationValue(input.page)
+    const limit = normalizePaginationValue(input.limit)
+
     return getClient(client).order.findMany({
       where: buildOrderWhereClause(input),
       orderBy: [
@@ -101,8 +115,8 @@ export const ordersRepository = {
           updatedAt: 'desc',
         },
       ],
-      skip: (input.page - 1) * input.limit,
-      take: input.limit,
+      skip: (page - 1) * limit,
+      take: limit,
       include: orderListInclude,
     })
   },

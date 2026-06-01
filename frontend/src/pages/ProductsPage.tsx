@@ -1,5 +1,5 @@
 import { ChevronDown, Search, SlidersHorizontal, X } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { ProductCard } from '../components/product/ProductCard'
 import { Button } from '../components/ui/Button'
@@ -9,7 +9,6 @@ import { EmptyState } from '../components/ui/EmptyState'
 import { ErrorState } from '../components/ui/ErrorState'
 import { Input } from '../components/ui/Input'
 import { LoadingState } from '../components/ui/LoadingState'
-import { buttonStyles } from '../components/ui/button-styles'
 import { getBrands, getProducts } from '../features/catalog/catalog.api'
 import { useAuth } from '../features/auth/useAuth'
 import { useWishlist } from '../features/wishlist/useWishlist'
@@ -22,6 +21,45 @@ import type {
 } from '../features/catalog/catalog.types'
 import { getApiErrorMessage } from '../lib/api-client'
 
+function FilterAccordion({
+  title,
+  isOpen,
+  onToggle,
+  children,
+}: {
+  title: string
+  isOpen: boolean
+  onToggle: () => void
+  children: ReactNode
+}) {
+  return (
+    <section className="border-b border-slate-200/80 pb-4 last:border-b-0 last:pb-0">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex w-full items-start justify-between gap-4 text-left"
+      >
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-slate-900">{title}</p>
+        </div>
+        <ChevronDown
+          className={`mt-0.5 h-4 w-4 shrink-0 text-slate-500 transition ${
+            isOpen ? 'rotate-180' : 'rotate-0'
+          }`}
+        />
+      </button>
+
+      <div
+        className={`grid overflow-hidden transition-all duration-300 ${
+          isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+        }`}
+      >
+        <div className="min-h-0 pt-3">{children}</div>
+      </div>
+    </section>
+  )
+}
+
 function FilterPanel({
   brands,
   selectedBrand,
@@ -32,7 +70,6 @@ function FilterPanel({
   onStockChange,
   onMinPriceChange,
   onMaxPriceChange,
-  onClearFilters,
 }: {
   brands: Brand[]
   selectedBrand: string
@@ -43,149 +80,194 @@ function FilterPanel({
   onStockChange: (value: string) => void
   onMinPriceChange: (value: string) => void
   onMaxPriceChange: (value: string) => void
-  onClearFilters: () => void
 }) {
-  const [isBrandsOpen, setIsBrandsOpen] = useState(false)
-  const [isPriceOpen, setIsPriceOpen] = useState(false)
-  const [isStockOpen, setIsStockOpen] = useState(false)
+  const [isBrandsOpen, setIsBrandsOpen] = useState(true)
+  const [isPriceOpen, setIsPriceOpen] = useState(true)
+  const [isStockOpen, setIsStockOpen] = useState(true)
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-3">
-        <button
-          type="button"
-          onClick={() => setIsBrandsOpen((value) => !value)}
-          className="flex w-full items-center justify-between text-sm font-semibold text-slate-700 transition hover:text-slate-950"
-        >
-          <span>Brands</span>
-          <ChevronDown
-            className={`h-4 w-4 transition ${isBrandsOpen ? 'rotate-180' : 'rotate-0'}`}
-          />
-        </button>
+    <div className="space-y-4">
+      <FilterAccordion
+        title="Brands"
+        isOpen={isBrandsOpen}
+        onToggle={() => setIsBrandsOpen((value) => !value)}
+      >
+        <div className="max-h-64 overflow-auto pr-1 scrollbar-light">
+          <div className="grid gap-2">
+            <button
+              type="button"
+              onClick={() => onBrandChange('')}
+              className={`flex w-full items-center justify-between rounded-2xl border px-3 py-2 text-left text-sm font-medium transition ${
+                selectedBrand === ''
+                  ? 'border-brand-200 bg-brand-50 text-brand-700'
+                  : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-950'
+              }`}
+            >
+              <span>All brands</span>
+              <span className="text-xs font-semibold text-slate-400">All</span>
+            </button>
 
-        <div
-          className={`grid overflow-hidden transition-all duration-300 ${
-            isBrandsOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
-          }`}
-        >
-          <div className="min-h-0">
-            <div className="grid gap-1 pt-2">
+            {brands.map((brand) => (
               <button
+                key={brand.id}
                 type="button"
-                onClick={() => onBrandChange('')}
-                className={`rounded-md px-2 py-1.5 text-left text-sm font-medium transition ${
-                  selectedBrand === ''
-                    ? 'bg-brand-50 text-brand-700'
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-950'
+                onClick={() => onBrandChange(brand.slug)}
+                className={`flex w-full items-center justify-between rounded-2xl border px-3 py-2 text-left text-sm font-medium transition ${
+                  selectedBrand === brand.slug
+                    ? 'border-brand-200 bg-brand-50 text-brand-700'
+                    : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-950'
                 }`}
               >
-                All brands
+                <span className="truncate">{brand.name}</span>
+                <span className="ml-3 rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-slate-400">
+                  {brand.productCount}
+                </span>
               </button>
-              {brands.map((brand) => (
-                <button
-                  key={brand.id}
-                  type="button"
-                  onClick={() => onBrandChange(brand.slug)}
-                  className={`rounded-md px-2 py-1.5 text-left text-sm font-medium transition ${
-                    selectedBrand === brand.slug
-                      ? 'bg-brand-50 text-brand-700'
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-950'
-                  }`}
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <span>{brand.name}</span>
-                    <span className="text-[11px] text-slate-400">{brand.productCount}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
+            ))}
           </div>
         </div>
-      </div>
+      </FilterAccordion>
 
-      <div className="space-y-3">
-        <button
-          type="button"
-          onClick={() => setIsPriceOpen((value) => !value)}
-          className="flex w-full items-center justify-between text-sm font-semibold text-slate-700 transition hover:text-slate-950"
-        >
-          <span>Price range</span>
-          <ChevronDown
-            className={`h-4 w-4 transition ${isPriceOpen ? 'rotate-180' : 'rotate-0'}`}
+      <FilterAccordion
+        title="Price range"
+        isOpen={isPriceOpen}
+        onToggle={() => setIsPriceOpen((value) => !value)}
+      >
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Input
+            type="number"
+            min="0"
+            placeholder="Min price"
+            value={minPrice}
+            onChange={(event) => onMinPriceChange(event.target.value)}
           />
-        </button>
-        <div
-          className={`grid overflow-hidden transition-all duration-300 ${
-            isPriceOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
-          }`}
-        >
-          <div className="min-h-0">
-            <div className="grid gap-3 rounded-3xl border border-slate-200 bg-slate-50 p-4">
-              <Input
-                type="number"
-                min="0"
-                placeholder="Minimum price"
-                value={minPrice}
-                onChange={(event) => onMinPriceChange(event.target.value)}
-              />
-              <Input
-                type="number"
-                min="0"
-                placeholder="Maximum price"
-                value={maxPrice}
-                onChange={(event) => onMaxPriceChange(event.target.value)}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        <button
-          type="button"
-          onClick={() => setIsStockOpen((value) => !value)}
-          className="flex w-full items-center justify-between text-sm font-semibold text-slate-700 transition hover:text-slate-950"
-        >
-          <span>Stock status</span>
-          <ChevronDown
-            className={`h-4 w-4 transition ${isStockOpen ? 'rotate-180' : 'rotate-0'}`}
+          <Input
+            type="number"
+            min="0"
+            placeholder="Max price"
+            value={maxPrice}
+            onChange={(event) => onMaxPriceChange(event.target.value)}
           />
-        </button>
-        <div
-          className={`grid overflow-hidden transition-all duration-300 ${
-            isStockOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
-          }`}
-        >
-          <div className="min-h-0">
-            <div className="grid gap-2 pt-2">
-              {[
-                { label: 'All stock', value: '' },
-                { label: 'In stock', value: 'in_stock' },
-                { label: 'Low stock', value: 'low_stock' },
-                { label: 'Out of stock', value: 'out_of_stock' },
-              ].map((option) => (
-                <button
-                  key={option.label}
-                  type="button"
-                  onClick={() => onStockChange(option.value)}
-                  className={`rounded-2xl border px-4 py-3 text-left text-sm font-medium transition ${
-                    selectedStock === option.value
-                      ? 'border-brand-200 bg-brand-50 text-brand-700'
-                      : 'border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50'
-                  }`}
-                >
-                  {option.label}
-                </button>
-              ))}
+        </div>
+      </FilterAccordion>
+
+      <FilterAccordion
+        title="Stock status"
+        isOpen={isStockOpen}
+        onToggle={() => setIsStockOpen((value) => !value)}
+      >
+        <div className="grid gap-2">
+          {[
+            { label: 'All stock', value: '' },
+            { label: 'In stock', value: 'in_stock' },
+            { label: 'Low stock', value: 'low_stock' },
+            { label: 'Out of stock', value: 'out_of_stock' },
+          ].map((option) => (
+            <button
+              key={option.label}
+              type="button"
+              onClick={() => onStockChange(option.value)}
+              className={`flex items-center justify-between rounded-2xl border px-4 py-3 text-left text-sm font-medium transition ${
+                selectedStock === option.value
+                  ? 'border-brand-200 bg-brand-50 text-brand-700'
+                  : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-950'
+              }`}
+            >
+              <span>{option.label}</span>
+              <span
+                className={`h-2.5 w-2.5 rounded-full ${
+                  selectedStock === option.value ? 'bg-brand-600' : 'border border-slate-300'
+                }`}
+              />
+            </button>
+          ))}
+        </div>
+      </FilterAccordion>
+    </div>
+  )
+}
+
+function FilterChip({
+  label,
+  active = false,
+}: {
+  label: string
+  active?: boolean
+}) {
+  return (
+    <span
+      className={`inline-flex items-center rounded-full border px-3 py-1.5 text-sm font-medium ${
+        active
+          ? 'border-brand-200 bg-brand-50 text-brand-700'
+          : 'border-slate-200 bg-slate-50 text-slate-600'
+      }`}
+    >
+      {label}
+    </span>
+  )
+}
+
+function FilterDrawer({
+  open,
+  onClose,
+  onClearFilters,
+  children,
+}: {
+  open: boolean
+  onClose: () => void
+  onClearFilters: () => void
+  children: ReactNode
+}) {
+  useEffect(() => {
+    if (!open) {
+      return
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [open, onClose])
+
+  if (!open) {
+    return null
+  }
+
+  return (
+    <div className="fixed inset-0 z-50">
+      <button
+        type="button"
+        aria-label="Close filters"
+        className="absolute inset-0 cursor-default bg-slate-950/20 backdrop-blur-[2px]"
+        onClick={onClose}
+      />
+
+      <aside className="absolute left-0 top-0 h-full w-[min(92vw,390px)] border-r border-slate-200 bg-white shadow-[24px_0_80px_-35px_rgba(15,23,42,0.45)]">
+        <div className="flex h-full flex-col">
+          <div className="flex items-start justify-between gap-4 border-b border-slate-200/80 px-5 py-4">
+            <div>
+              <p className="text-lg font-bold text-slate-950">Filters</p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={onClearFilters}>
+                Clear filters
+              </Button>
+              <Button variant="ghost" size="sm" onClick={onClose} aria-label="Close filter drawer">
+                <X className="h-4 w-4" />
+              </Button>
             </div>
           </div>
-        </div>
-      </div>
 
-      <Button variant="outline" onClick={onClearFilters}>
-        <X className="h-4 w-4" />
-        Clear filters
-      </Button>
+          <div className="flex-1 overflow-y-auto px-5 py-4 scrollbar-light">
+            {children}
+          </div>
+        </div>
+      </aside>
     </div>
   )
 }
@@ -193,7 +275,7 @@ function FilterPanel({
 const defaultLimit = 12
 
 const sortOptions: Array<{ label: string; value: SortOption }> = [
-  { label: 'Newest', value: 'newest' },
+  { label: 'Newest First', value: 'newest' },
   { label: 'Price: Low to High', value: 'price_low_to_high' },
   { label: 'Price: High to Low', value: 'price_high_to_low' },
   { label: 'Name: A to Z', value: 'name_az' },
@@ -227,8 +309,7 @@ const buildProductsQuery = (searchParams: URLSearchParams): ProductsQueryParams 
   minPrice: normalizePositiveNumber(searchParams.get('minPrice')),
   maxPrice: normalizePositiveNumber(searchParams.get('maxPrice')),
   sort: (searchParams.get('sort') as SortOption | null) || 'newest',
-  stock:
-    (searchParams.get('stock') as ProductsQueryParams['stock'] | null) || undefined,
+  stock: (searchParams.get('stock') as ProductsQueryParams['stock'] | null) || undefined,
   page: normalizePositiveInteger(searchParams.get('page'), 1),
   limit: Math.min(normalizePositiveInteger(searchParams.get('limit'), defaultLimit), 48),
 })
@@ -256,6 +337,19 @@ const updateSearchParams = (
   return nextSearchParams
 }
 
+const getStockLabel = (stock?: ProductsQueryParams['stock']) => {
+  switch (stock) {
+    case 'in_stock':
+      return 'In stock'
+    case 'low_stock':
+      return 'Low stock'
+    case 'out_of_stock':
+      return 'Out of stock'
+    default:
+      return 'All'
+  }
+}
+
 export function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const { isAuthenticated } = useAuth()
@@ -269,11 +363,34 @@ export function ProductsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isMetaLoading, setIsMetaLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false)
 
   useEffect(() => {
     setSearchInput(query.search ?? '')
   }, [query.search])
+
+  useEffect(() => {
+    const nextSearch = searchInput.trim()
+    const currentSearch = query.search ?? ''
+
+    if (nextSearch === currentSearch) {
+      return
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setSearchParams(
+        updateSearchParams(
+          searchParams,
+          {
+            search: nextSearch || undefined,
+          },
+          true,
+        ),
+      )
+    }, 300)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [query.search, searchInput, searchParams, setSearchParams])
 
   useEffect(() => {
     let isMounted = true
@@ -357,10 +474,9 @@ export function ProductsPage() {
     void refreshWishlistStatus(products.map((product) => product.id))
   }, [isAuthenticated, products, refreshWishlistStatus])
 
-  const activeCategoryName =
-    getCatalogCategoryLabel(query.category) ?? 'All'
-  const activeBrandName =
-    brands.find((brand) => brand.slug === query.brand)?.name ?? 'All'
+  const activeCategoryName = getCatalogCategoryLabel(query.category) ?? 'All'
+  const activeBrandName = brands.find((brand) => brand.slug === query.brand)?.name ?? 'All'
+  const activeStockLabel = getStockLabel(query.stock)
   const pageTitle = activeCategoryName === 'All' ? 'Products' : activeCategoryName
 
   const paginationButtons = useMemo(() => {
@@ -378,21 +494,14 @@ export function ProductsPage() {
     return [...buttons].sort((left, right) => left - right)
   }, [query.page, totalPages])
 
-  const applySearch = () => {
-    setSearchParams(
-      updateSearchParams(
-        searchParams,
-        {
-          search: searchInput.trim() || undefined,
-        },
-        true,
-      ),
-    )
-  }
-
   const clearFilters = () => {
     setSearchInput('')
     setSearchParams(new URLSearchParams())
+  }
+
+  const clearFiltersAndCloseDrawer = () => {
+    clearFilters()
+    setIsFilterDrawerOpen(false)
   }
 
   const changePage = (page: number) => {
@@ -425,174 +534,149 @@ export function ProductsPage() {
       onMaxPriceChange={(value) => {
         setSearchParams(updateSearchParams(searchParams, { maxPrice: value || undefined }, true))
       }}
-      onClearFilters={clearFilters}
     />
   )
 
   return (
     <>
-      <Container className="pb-10 pt-4">
-        <div className="mb-4">
-          <h1 className="text-2xl font-extrabold tracking-tight text-slate-950 sm:text-3xl">
+      <Container className="pb-12 pt-4">
+        <div className="mb-6">
+          <h1 className="text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">
             {pageTitle}
           </h1>
+          <p className="mt-2 text-sm text-slate-500">{totalProducts} products found</p>
         </div>
 
-        <div className="mb-4 flex justify-end lg:hidden">
-          <button
-            type="button"
-            className={buttonStyles('outline', 'md')}
-            onClick={() => setIsFilterOpen((value) => !value)}
-          >
-            <SlidersHorizontal className="h-4 w-4" />
-            Filters
-          </button>
-        </div>
-        <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
-          <Card className="hidden h-fit p-6 lg:block">
-            {isMetaLoading ? (
-              <p className="text-sm text-slate-500">Loading filters...</p>
-            ) : (
-              filterPanel
-            )}
+        <div className="space-y-6">
+          <Card className="p-5 lg:p-6">
+            <div className="grid gap-3 lg:grid-cols-[auto_minmax(0,1fr)_240px]">
+              <Button
+                type="button"
+                variant="outline"
+                size="lg"
+                onClick={() => setIsFilterDrawerOpen(true)}
+                className="whitespace-nowrap justify-center lg:justify-start"
+              >
+                <SlidersHorizontal className="h-4 w-4" />
+                Filters
+              </Button>
+
+              <label className="flex h-12 min-w-0 items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-4">
+                <Search className="h-4 w-4 shrink-0 text-slate-400" />
+                <input
+                  value={searchInput}
+                  onChange={(event) => setSearchInput(event.target.value)}
+                  type="search"
+                  placeholder="Search by product, SKU, category, or brand"
+                  aria-label="Search products"
+                  className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
+                />
+              </label>
+
+              <select
+                value={query.sort ?? 'newest'}
+                onChange={(event) => {
+                  setSearchParams(updateSearchParams(searchParams, { sort: event.target.value }, true))
+                }}
+                className="h-12 rounded-full border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
+              >
+                {sortOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    Sort: {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="mt-4 flex flex-wrap gap-2">
+              <FilterChip label={`Category: ${activeCategoryName}`} active={activeCategoryName !== 'All'} />
+              <FilterChip label={`Brand: ${activeBrandName}`} active={activeBrandName !== 'All'} />
+              <FilterChip label={`Stock: ${activeStockLabel}`} active={activeStockLabel !== 'All'} />
+              <FilterChip label={`${totalProducts} products`} active />
+            </div>
           </Card>
 
-          <div className="space-y-6">
-            <Card className="p-5">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
-                <label className="flex h-12 flex-1 items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-4">
-                  <Search className="h-4 w-4 text-slate-400" />
-                  <input
-                    value={searchInput}
-                    onChange={(event) => setSearchInput(event.target.value)}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter') {
-                        applySearch()
-                      }
-                    }}
-                    type="search"
-                    placeholder="Search by product, SKU, category, or brand"
-                    aria-label="Search products"
-                    className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
-                  />
-                </label>
-                <Button onClick={applySearch}>
-                  <Search className="h-4 w-4" />
-                  Search
+          {isLoading ? (
+            <LoadingState
+              title="Loading products"
+              description="Fetching the catalogue."
+              cardCount={6}
+            />
+          ) : errorMessage ? (
+            <ErrorState
+              title="Unable to load products"
+              description={errorMessage}
+              action={
+                <Button variant="secondary" onClick={retryProducts}>
+                  Try again
                 </Button>
-                <select
-                  value={query.sort ?? 'newest'}
-                  onChange={(event) => {
-                    setSearchParams(
-                      updateSearchParams(searchParams, { sort: event.target.value }, true),
-                    )
-                  }}
-                  className="h-12 rounded-full border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
-                >
-                  {sortOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      Sort: {option.label}
-                    </option>
-                  ))}
-                </select>
+              }
+            />
+          ) : products.length > 0 ? (
+            <>
+              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                {products.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
               </div>
 
-              <div className="mt-4 flex flex-wrap gap-2 text-sm text-slate-500">
-                <span className="rounded-full bg-slate-100 px-3 py-1">
-                  Category: {activeCategoryName}
-                </span>
-                <span className="rounded-full bg-slate-100 px-3 py-1">
-                  Brand: {activeBrandName}
-                </span>
-                <span className="rounded-full bg-slate-100 px-3 py-1">
-                  Stock: {query.stock ? query.stock.replaceAll('_', ' ') : 'All'}
-                </span>
-                <span className="rounded-full bg-slate-100 px-3 py-1">
-                  {totalProducts} product{totalProducts === 1 ? '' : 's'}
-                </span>
-              </div>
-            </Card>
-
-            {isFilterOpen ? (
-              <Card className="p-6 lg:hidden">
-                {isMetaLoading ? (
-                  <p className="text-sm text-slate-500">Loading filters...</p>
-                ) : (
-                  filterPanel
-                )}
-              </Card>
-            ) : null}
-
-            {isLoading ? (
-              <LoadingState
-                title="Loading products"
-                description="Fetching the catalogue."
-                cardCount={6}
-              />
-            ) : errorMessage ? (
-              <ErrorState
-                title="Unable to load products"
-                description={errorMessage}
-                action={(
-                  <Button variant="secondary" onClick={retryProducts}>
-                    Try again
+              <Card className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-sm text-slate-600">
+                  Showing page {query.page ?? 1} of {totalPages}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="outline"
+                    disabled={(query.page ?? 1) <= 1}
+                    onClick={() => changePage((query.page ?? 1) - 1)}
+                  >
+                    Previous
                   </Button>
-                )}
-              />
-            ) : products.length > 0 ? (
-              <>
-                <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-                  {products.map((product) => (
-                    <ProductCard key={product.id} product={product} />
+                  {paginationButtons.map((page) => (
+                    <Button
+                      key={page}
+                      variant={page === (query.page ?? 1) ? 'primary' : 'outline'}
+                      onClick={() => changePage(page)}
+                    >
+                      {page}
+                    </Button>
                   ))}
+                  <Button
+                    variant="outline"
+                    disabled={(query.page ?? 1) >= totalPages}
+                    onClick={() => changePage((query.page ?? 1) + 1)}
+                  >
+                    Next
+                  </Button>
                 </div>
-
-                <Card className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-sm text-slate-600">
-                    Showing page {query.page ?? 1} of {totalPages}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      variant="outline"
-                      disabled={(query.page ?? 1) <= 1}
-                      onClick={() => changePage((query.page ?? 1) - 1)}
-                    >
-                      Previous
-                    </Button>
-                    {paginationButtons.map((page) => (
-                      <Button
-                        key={page}
-                        variant={page === (query.page ?? 1) ? 'primary' : 'outline'}
-                        onClick={() => changePage(page)}
-                      >
-                        {page}
-                      </Button>
-                    ))}
-                    <Button
-                      variant="outline"
-                      disabled={(query.page ?? 1) >= totalPages}
-                      onClick={() => changePage((query.page ?? 1) + 1)}
-                    >
-                      Next
-                    </Button>
-                  </div>
-                </Card>
-              </>
-            ) : (
-              <EmptyState
-                icon={Search}
-                title="No products matched your filters"
-                description="Try a different search or clear the filters."
-                action={(
-                  <Button variant="secondary" onClick={clearFilters}>
-                    Clear filters
-                  </Button>
-                )}
-              />
-            )}
-          </div>
+              </Card>
+            </>
+          ) : (
+            <EmptyState
+              icon={Search}
+              title="No products matched your filters"
+              description="Try a different search or clear the filters."
+              action={
+                <Button variant="secondary" onClick={clearFilters}>
+                  Clear filters
+                </Button>
+              }
+            />
+          )}
         </div>
       </Container>
+
+      <FilterDrawer
+        open={isFilterDrawerOpen}
+        onClose={() => setIsFilterDrawerOpen(false)}
+        onClearFilters={clearFiltersAndCloseDrawer}
+      >
+        {isMetaLoading ? (
+          <p className="text-sm text-slate-500">Loading filters...</p>
+        ) : (
+          filterPanel
+        )}
+      </FilterDrawer>
     </>
   )
 }

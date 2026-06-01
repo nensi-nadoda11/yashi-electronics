@@ -1,16 +1,16 @@
 # Graph Report - yashi_electronics  (2026-06-01)
 
 ## Corpus Check
-- 151 files · ~43,505 words
+- 154 files · ~45,899 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 717 nodes · 906 edges · 20 communities detected
-- Extraction: 87% EXTRACTED · 13% INFERRED · 0% AMBIGUOUS · INFERRED: 121 edges (avg confidence: 0.8)
+- 740 nodes · 935 edges · 22 communities detected
+- Extraction: 87% EXTRACTED · 13% INFERRED · 0% AMBIGUOUS · INFERRED: 123 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `4a580c70`
+- Built from commit: `edd374fe`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -32,21 +32,23 @@
 - [[_COMMUNITY_Community 14|Community 14]]
 - [[_COMMUNITY_Community 15|Community 15]]
 - [[_COMMUNITY_Community 16|Community 16]]
+- [[_COMMUNITY_Community 17|Community 17]]
 - [[_COMMUNITY_Community 26|Community 26]]
 - [[_COMMUNITY_Community 27|Community 27]]
-- [[_COMMUNITY_Community 33|Community 33]]
+- [[_COMMUNITY_Community 30|Community 30]]
+- [[_COMMUNITY_Community 35|Community 35]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `getApiErrorMessage()` - 23 edges
 2. `Card()` - 22 edges
-3. `successResponse()` - 19 edges
-4. `Button()` - 19 edges
-5. `Container()` - 19 edges
-6. `cn()` - 19 edges
+3. `cn()` - 20 edges
+4. `successResponse()` - 19 edges
+5. `Button()` - 19 edges
+6. `Container()` - 19 edges
 7. `useAuth()` - 17 edges
 8. `AuthRepository` - 16 edges
 9. `buttonStyles()` - 16 edges
-10. `AppError` - 14 edges
+10. `AppError` - 15 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `loadProducts()` --calls--> `getApiErrorMessage()`  [INFERRED]
@@ -60,11 +62,11 @@
 - `requireCustomerAuth()` --calls--> `clearAuthCookie()`  [INFERRED]
   backend/src/modules/auth/auth.middleware.ts → backend/src/modules/auth/auth.service.ts
 
-## Communities (158 total, 4 thin omitted)
+## Communities (160 total, 4 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.05
-Nodes (26): useAddress(), AddToCartButton(), QuantitySelector(), useCart(), CancelOrderModal(), OrderStatusBadge(), PaymentStatusBadge(), clearFilters() (+18 more)
+Nodes (27): useAddress(), AddToCartButton(), QuantitySelector(), useCart(), CancelOrderModal(), OrderStatusBadge(), PaymentStatusBadge(), clearFilters() (+19 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.05
@@ -79,32 +81,32 @@ Cohesion: 0.06
 Nodes (19): normalizeAddressPayload(), normalizeOptionalText(), normalizeText(), validateAddressForm(), handleSubmit(), getApiErrorMessage(), getBrands(), getCategories() (+11 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.12
-Nodes (14): forgotPasswordController(), getSessionController(), loginCustomerController(), logoutCustomerController(), registerCustomerController(), resetPasswordController(), sendRegistrationOtpController(), clearAuthCookie() (+6 more)
+Cohesion: 0.08
+Nodes (6): requireCustomerAuth(), verifyAuthToken(), errorMiddleware(), getPrismaErrorDetails(), errorResponse(), AppError
 
 ### Community 5 - "Community 5"
-Cohesion: 0.1
-Nodes (11): buildCanCancel(), buildCanContinuePayment(), buildTimeline(), createTimelineEntry(), mapOrderDetail(), mapOrderListItem(), mapPayment(), mapShippingAddress() (+3 more)
-
-### Community 6 - "Community 6"
 Cohesion: 0.13
 Nodes (16): buildCartResponse(), createEmptyResponse(), createEmptySummary(), mapCartItem(), mapCartProduct(), roundMoney(), toDecimal(), toNumber() (+8 more)
+
+### Community 6 - "Community 6"
+Cohesion: 0.14
+Nodes (11): forgotPasswordController(), getSessionController(), loginCustomerController(), logoutCustomerController(), registerCustomerController(), resetPasswordController(), sendRegistrationOtpController(), clearAuthCookie() (+3 more)
 
 ### Community 7 - "Community 7"
 Cohesion: 0.15
 Nodes (15): buildCartResponse(), createEmptyResponse(), createEmptySummary(), mapCartItem(), mapCartProduct(), roundMoney(), toDecimal(), toNumber() (+7 more)
 
 ### Community 8 - "Community 8"
-Cohesion: 0.17
-Nodes (12): requireCustomerAuth(), AuthService, createOtpHash(), createResetTokenHash(), generateOtp(), normalizedEmail(), normalizedMobile(), signAuthToken() (+4 more)
+Cohesion: 0.12
+Nodes (15): getBrands(), findNodeBySlug(), getCategoryFilterSlugs(), getCategoryLabel(), getCategories(), buildOrderBySql(), buildWhereSql(), findActiveBrands() (+7 more)
 
 ### Community 9 - "Community 9"
+Cohesion: 0.22
+Nodes (10): AuthService, createOtpHash(), createResetTokenHash(), generateOtp(), normalizedEmail(), normalizedMobile(), signAuthToken(), sendEmail() (+2 more)
+
+### Community 10 - "Community 10"
 Cohesion: 0.2
 Nodes (17): buildAddressFingerprint(), buildCheckoutFingerprint(), buildCheckoutState(), buildDuplicateOrderResponse(), buildItemValidation(), buildOrderFingerprint(), buildSummaryFromItems(), createEmptySummary() (+9 more)
-
-### Community 11 - "Community 11"
-Cohesion: 0.17
-Nodes (12): getBrands(), getCategories(), buildOrderBySql(), buildWhereSql(), findActiveBrands(), findActiveCategories(), findProductBySlug(), findProducts() (+4 more)
 
 ### Community 12 - "Community 12"
 Cohesion: 0.17
@@ -119,12 +121,20 @@ Cohesion: 0.28
 Nodes (12): buildCheckoutState(), buildItemValidation(), buildSummaryFromItems(), createEmptySummary(), formatOrderDateSegment(), generateOrderNumber(), mapAddress(), mapCheckoutItem() (+4 more)
 
 ### Community 15 - "Community 15"
+Cohesion: 0.35
+Nodes (10): buildCanCancel(), buildCanContinuePayment(), buildTimeline(), createTimelineEntry(), mapOrderDetail(), mapOrderListItem(), mapPayment(), mapShippingAddress() (+2 more)
+
+### Community 16 - "Community 16"
 Cohesion: 0.17
 Nodes (6): AddressProvider(), AddToCartButton(), CartProvider(), useAuth(), useCart(), WishlistProvider()
 
-### Community 16 - "Community 16"
+### Community 17 - "Community 17"
 Cohesion: 0.22
 Nodes (4): Button(), buttonStyles(), cn(), navLinkClass()
+
+### Community 26 - "Community 26"
+Cohesion: 0.6
+Nodes (3): getSeedCategorySlug(), run(), seedCatalog()
 
 ## Knowledge Gaps
 - **4 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
@@ -132,10 +142,12 @@ Nodes (4): Button(), buttonStyles(), cn(), navLinkClass()
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `AppError` connect `Community 5` to `Community 4`, `Community 7`, `Community 8`, `Community 9`, `Community 11`?**
-  _High betweenness centrality (0.028) - this node is a cross-community bridge._
+- **Why does `AppError` connect `Community 4` to `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 15`?**
+  _High betweenness centrality (0.031) - this node is a cross-community bridge._
 - **Why does `getApiErrorMessage()` connect `Community 1` to `Community 0`, `Community 13`?**
-  _High betweenness centrality (0.013) - this node is a cross-community bridge._
+  _High betweenness centrality (0.014) - this node is a cross-community bridge._
+- **Why does `successResponse()` connect `Community 6` to `Community 4`?**
+  _High betweenness centrality (0.008) - this node is a cross-community bridge._
 - **Are the 10 inferred relationships involving `getApiErrorMessage()` (e.g. with `handleSubmit()` and `fetchSummary()`) actually correct?**
   _`getApiErrorMessage()` has 10 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 7 inferred relationships involving `successResponse()` (e.g. with `sendRegistrationOtpController()` and `registerCustomerController()`) actually correct?**
@@ -144,5 +156,3 @@ _Questions this graph is uniquely positioned to answer:_
   _Cohesion score 0.05 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**
   _Cohesion score 0.05 - nodes in this community are weakly interconnected._
-- **Should `Community 2` be split into smaller, more focused modules?**
-  _Cohesion score 0.07 - nodes in this community are weakly interconnected._

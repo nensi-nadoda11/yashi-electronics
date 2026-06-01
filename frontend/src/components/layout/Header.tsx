@@ -182,9 +182,6 @@ export function Header() {
               </nav>
 
               <div className="space-y-3 rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
-                  Shop by category
-                </p>
                 <div className="grid gap-2">
                   {catalogNavigation.map((mainCategory) => (
                     <details
@@ -196,13 +193,6 @@ export function Header() {
                         <ChevronRight className="h-4 w-4 shrink-0 transition group-open:rotate-90" />
                       </summary>
                       <div className="mt-3 grid gap-2 border-t border-slate-100 pt-3">
-                        <Link
-                          to={`/products?category=${encodeURIComponent(mainCategory.slug)}`}
-                          className="rounded-xl bg-slate-50 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-brand-50 hover:text-brand-700"
-                          onClick={() => setMobileOpen(false)}
-                        >
-                          View all {mainCategory.name}
-                        </Link>
                         {mainCategory.children.map((subCategory) => (
                           <Link
                             key={subCategory.slug}

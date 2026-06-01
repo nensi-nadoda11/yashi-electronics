@@ -1,7 +1,7 @@
 {
   "E:\\yashi_electronics\\backend\\prisma\\seed.ts": {
-    "mtime": 1780052399.8938222,
-    "hash": "3cf860fd96689d1d490f4662d1c3e3c3"
+    "mtime": 1780303297.2356074,
+    "hash": "d1758b7936cda2ec094495cb0a4a2d4c"
   },
   "E:\\yashi_electronics\\backend\\prisma\\migrations\\20260529092937\\migration.sql": {
     "mtime": 1780048986.000007,
@@ -151,6 +151,10 @@
     "mtime": 1780052399.9027803,
     "hash": "a5977703b698a7fbb4847da159c47954"
   },
+  "E:\\yashi_electronics\\backend\\src\\modules\\catalog\\catalog-navigation.ts": {
+    "mtime": 1780296116.0130785,
+    "hash": "29c06f492ab5a5999ea2cbe6965d9319"
+  },
   "E:\\yashi_electronics\\backend\\src\\modules\\catalog\\catalog.routes.ts": {
     "mtime": 1780295128.9935932,
     "hash": "28c59b519b9c25a19c225e3215f6b2c8"
@@ -172,8 +176,8 @@
     "hash": "96aca69e7149fc3c5324873367c1cffa"
   },
   "E:\\yashi_electronics\\backend\\src\\modules\\catalog\\product.repository.ts": {
-    "mtime": 1780052399.9120123,
-    "hash": "37b773c7122108bb2eb2ccf4b754dcc5"
+    "mtime": 1780296171.5467854,
+    "hash": "a2f9e7ea416ac1da222d472823375505"
   },
   "E:\\yashi_electronics\\backend\\src\\modules\\catalog\\product.schemas.ts": {
     "mtime": 1780295124.6428688,
@@ -212,12 +216,12 @@
     "hash": "e6bd1a66be7543736b9af9f7719aeeef"
   },
   "E:\\yashi_electronics\\backend\\src\\modules\\orders\\orders.controller.ts": {
-    "mtime": 1780295254.1657877,
-    "hash": "47949b00742660c058d878eb874c3a1f"
+    "mtime": 1780307375.8777065,
+    "hash": "36f8ab05bbbddcdd964194132bec2434"
   },
   "E:\\yashi_electronics\\backend\\src\\modules\\orders\\orders.repository.ts": {
-    "mtime": 1780291528.1518886,
-    "hash": "41273a32918ae5963d3f192602cbcf2c"
+    "mtime": 1780307297.5604904,
+    "hash": "d6fde358ece7304d8bda06fa7f275b03"
   },
   "E:\\yashi_electronics\\backend\\src\\modules\\orders\\orders.routes.ts": {
     "mtime": 1780291582.9110065,
@@ -236,8 +240,8 @@
     "hash": "565bcae47c47845d325755ae5617532e"
   },
   "E:\\yashi_electronics\\backend\\src\\modules\\wishlist\\wishlist.controller.ts": {
-    "mtime": 1780295150.5996196,
-    "hash": "5603b128015c143d737f3b4377ca104d"
+    "mtime": 1780305244.1379423,
+    "hash": "58d84d95d78bf216ca41899e55a5bb02"
   },
   "E:\\yashi_electronics\\backend\\src\\modules\\wishlist\\wishlist.repository.ts": {
     "mtime": 1780053421.2696552,
@@ -331,17 +335,21 @@
     "mtime": 1780295281.7828226,
     "hash": "b928197beb024a927cd067988a6414b3"
   },
+  "E:\\yashi_electronics\\frontend\\src\\components\\layout\\CategoryNavigationBar.tsx": {
+    "mtime": 1780304730.0722516,
+    "hash": "d7557ead7d5dd43b52cb4e8036bcf9a1"
+  },
   "E:\\yashi_electronics\\frontend\\src\\components\\layout\\CustomerLayout.tsx": {
     "mtime": 1780044705.6196282,
     "hash": "64a34a1d7678bf5b9077c92d58665d03"
   },
   "E:\\yashi_electronics\\frontend\\src\\components\\layout\\Footer.tsx": {
-    "mtime": 1780046588.0948906,
-    "hash": "80862091fead7c229c2eec4824c529f7"
+    "mtime": 1780305525.1110744,
+    "hash": "e5a447c0320b2411ae1d8b2d177cbe3b"
   },
   "E:\\yashi_electronics\\frontend\\src\\components\\layout\\Header.tsx": {
-    "mtime": 1780295326.221838,
-    "hash": "dc7e70d06437df4699f0c3673390131c"
+    "mtime": 1780305437.9329956,
+    "hash": "3cd10c8cee41634904137f665ac4f9db"
   },
   "E:\\yashi_electronics\\frontend\\src\\components\\product\\ProductCard.tsx": {
     "mtime": 1780056004.558719,
@@ -364,12 +372,12 @@
     "hash": "e9209d3701810da77b7ecbef341a1bae"
   },
   "E:\\yashi_electronics\\frontend\\src\\components\\ui\\Container.tsx": {
-    "mtime": 1780044702.8480537,
-    "hash": "0122711810a2b8c3d23997a0c144804a"
+    "mtime": 1780297181.8386638,
+    "hash": "88ddc48d38cc47d09658e871eb173b6e"
   },
   "E:\\yashi_electronics\\frontend\\src\\components\\ui\\EmptyState.tsx": {
-    "mtime": 1780044704.180411,
-    "hash": "1e6c14f12cbf491ef8458430646e51bc"
+    "mtime": 1780305437.4384942,
+    "hash": "32f3b8fb020bd5ce7abb3f9513f88613"
   },
   "E:\\yashi_electronics\\frontend\\src\\components\\ui\\ErrorState.tsx": {
     "mtime": 1780044703.9423103,
@@ -380,20 +388,24 @@
     "hash": "e68890fa16336462b6644a9c060ceb28"
   },
   "E:\\yashi_electronics\\frontend\\src\\components\\ui\\LoadingState.tsx": {
-    "mtime": 1780044703.6915154,
-    "hash": "018bd308148694a46a9ef65cecee8fc8"
+    "mtime": 1780305437.6042132,
+    "hash": "ff99372b62fb655914eb3ba6ba8d4de5"
   },
   "E:\\yashi_electronics\\frontend\\src\\components\\ui\\PageHeader.tsx": {
-    "mtime": 1780044703.1584988,
-    "hash": "9ad85fddc59deefb10cd40f28e97d828"
+    "mtime": 1780305437.2538588,
+    "hash": "dbbf19a03fa9ac2a30bccd9d8046e412"
   },
   "E:\\yashi_electronics\\frontend\\src\\components\\ui\\SectionTitle.tsx": {
-    "mtime": 1780044703.4144044,
-    "hash": "d4ea3d9da72f700481e679eb546c91b1"
+    "mtime": 1780305437.070904,
+    "hash": "d75807e8a0c99b758a9d760533d1e53e"
   },
   "E:\\yashi_electronics\\frontend\\src\\components\\wishlist\\WishlistButton.tsx": {
     "mtime": 1780295320.05618,
     "hash": "a55eef6ce66c534861e7910e0449e933"
+  },
+  "E:\\yashi_electronics\\frontend\\src\\data\\catalog-navigation.ts": {
+    "mtime": 1780296191.2655225,
+    "hash": "c67882a863a664d4567ae92803dfb406"
   },
   "E:\\yashi_electronics\\frontend\\src\\data\\mock-data.ts": {
     "mtime": 1780286826.4154077,
@@ -536,8 +548,8 @@
     "hash": "470d4b1d76947f443f8e6c7175bfd54f"
   },
   "E:\\yashi_electronics\\frontend\\src\\pages\\HomePage.tsx": {
-    "mtime": 1780044863.292741,
-    "hash": "20a8bded0e9a2db4143c8aa8c2fd6358"
+    "mtime": 1780305467.611977,
+    "hash": "f48b45c4122c72d27287689290a5b825"
   },
   "E:\\yashi_electronics\\frontend\\src\\pages\\index.ts": {
     "mtime": 1780291898.9963417,
@@ -568,8 +580,8 @@
     "hash": "ece54abdaa4e87bbad50005b53234854"
   },
   "E:\\yashi_electronics\\frontend\\src\\pages\\ProductsPage.tsx": {
-    "mtime": 1780295416.72582,
-    "hash": "ba573e2cd8595fc9eda8c10602927544"
+    "mtime": 1780308558.5791051,
+    "hash": "8580d6e7e8fb777db293303c40cfadd9"
   },
   "E:\\yashi_electronics\\frontend\\src\\pages\\ProfilePage.tsx": {
     "mtime": 1780291925.057481,
