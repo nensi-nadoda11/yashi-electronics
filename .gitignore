@@ -44,7 +44,7 @@ Thumbs.db
 # Testing
 coverage/
 
-# Uploads (if local uploads folder use karo)
+# Uploads 
 backend/uploads/*
 !backend/uploads/.gitkeep
 
