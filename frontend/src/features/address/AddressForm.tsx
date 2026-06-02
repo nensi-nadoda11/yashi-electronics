@@ -117,10 +117,11 @@ export function AddressForm({
         <div>
           <Input
             id="address-landmark"
-            label="Landmark"
+            label="Landmark (optional)"
             placeholder="Near metro station"
             value={values.landmark}
             onChange={(event) => onChange('landmark', event.target.value)}
+            required={false}
             className={inputClassName}
           />
           {errors.landmark ? <p className={fieldErrorClassName}>{errors.landmark}</p> : null}

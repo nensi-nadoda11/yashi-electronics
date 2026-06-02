@@ -1,7 +1,6 @@
 import { Headphones, Mail, Phone } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { quickLinks, supportLinks } from '../../data/mock-data'
-import { ApiHealthStatus } from '../common/ApiHealthStatus'
 import { Container } from '../ui/Container'
 
 export function Footer() {
@@ -59,11 +58,8 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col gap-3 border-t border-slate-800 pt-5 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <p>&copy; 2026 Yashi Electronics. All rights reserved.</p>
-          </div>
-          <ApiHealthStatus />
+        <div className="mt-10 border-t border-slate-800 pt-5 text-sm text-slate-500">
+          <p>&copy; 2026 Yashi Electronics. All rights reserved.</p>
         </div>
       </Container>
     </footer>

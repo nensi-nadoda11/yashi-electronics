@@ -4,7 +4,11 @@ const indianMobileRegex = /^[6-9]\d{9}$/
 const indianPincodeRegex = /^\d{6}$/
 
 const normalizeText = (value: string) => value.trim()
-const normalizeOptionalText = (value: string) => {
+const normalizeOptionalText = (value: string | null | undefined) => {
+  if (typeof value !== 'string') {
+    return undefined
+  }
+
   const trimmed = value.trim()
   return trimmed.length > 0 ? trimmed : undefined
 }

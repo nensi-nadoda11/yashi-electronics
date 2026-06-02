@@ -387,7 +387,7 @@ export function ProductsPage() {
           true,
         ),
       )
-    }, 300)
+    }, 120)
 
     return () => window.clearTimeout(timeoutId)
   }, [query.search, searchInput, searchParams, setSearchParams])
@@ -544,7 +544,6 @@ export function ProductsPage() {
           <h1 className="text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">
             {pageTitle}
           </h1>
-          <p className="mt-2 text-sm text-slate-500">{totalProducts} products found</p>
         </div>
 
         <div className="space-y-6">

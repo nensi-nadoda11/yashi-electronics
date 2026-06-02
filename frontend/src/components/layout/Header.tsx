@@ -1,6 +1,6 @@
 import { ChevronRight, Heart, LogOut, Menu, Search, ShoppingCart, User, X } from 'lucide-react'
-import { useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Link, NavLink, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../features/auth/useAuth'
 import { useCart } from '../../features/cart/useCart'
 import { useWishlist } from '../../features/wishlist/useWishlist'
@@ -28,11 +28,52 @@ export function Header() {
   const { count: cartCount } = useCart()
   const { count } = useWishlist()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const [searchParams] = useSearchParams()
+  const location = useLocation()
+  const navigate = useNavigate()
+  const [searchText, setSearchText] = useState(
+    location.pathname === '/products' ? searchParams.get('search') ?? '' : '',
+  )
+  const searchTimeoutRef = useRef<number | null>(null)
   const mobileNavLinks = isAuthenticated
     ? [...primaryNavLinks, ...authenticatedUtilityLinks]
     : primaryNavLinks
 
+  useEffect(() => {
+    if (location.pathname !== '/products') {
+      return
+    }
+
+    setSearchText(searchParams.get('search') ?? '')
+  }, [location.pathname, searchParams])
+
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current !== null) {
+        window.clearTimeout(searchTimeoutRef.current)
+        searchTimeoutRef.current = null
+      }
+    }
+  }, [location.pathname])
+
   const firstName = customer?.fullName.trim().split(/\s+/)[0] ?? 'Profile'
+
+  const handleSearchChange = (value: string) => {
+    setSearchText(value)
+
+    if (searchTimeoutRef.current !== null) {
+      window.clearTimeout(searchTimeoutRef.current)
+    }
+
+    searchTimeoutRef.current = window.setTimeout(() => {
+      const nextSearch = value.trim()
+      const targetUrl = nextSearch ? `/products?search=${encodeURIComponent(nextSearch)}` : '/products'
+
+      navigate(targetUrl, { replace: true })
+      setMobileOpen(false)
+      searchTimeoutRef.current = null
+    }, 150)
+  }
 
   const handleLogout = async () => {
     setIsLoggingOut(true)
@@ -80,6 +121,8 @@ export function Header() {
                 type="search"
                 placeholder="Search smartphones, laptops, audio, appliances..."
                 aria-label="Search products"
+                value={searchText}
+                onChange={(event) => handleSearchChange(event.target.value)}
                 className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
               />
             </label>
@@ -157,6 +200,8 @@ export function Header() {
                   type="search"
                   placeholder="Search products"
                   aria-label="Search products"
+                  value={searchText}
+                  onChange={(event) => handleSearchChange(event.target.value)}
                   className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
                 />
               </label>

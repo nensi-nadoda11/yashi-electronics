@@ -316,12 +316,12 @@
     "hash": "57341d646bb988c5e0539e4d35ef56d7"
   },
   "E:\\yashi_electronics\\frontend\\src\\components\\cart\\AddToCartButton.tsx": {
-    "mtime": 1780295316.327771,
-    "hash": "b410d3e2bace0b6cb55903680ead9102"
+    "mtime": 1780313798.7362792,
+    "hash": "0005c70c441babf9785d4bb1571c196d"
   },
   "E:\\yashi_electronics\\frontend\\src\\components\\cart\\QuantitySelector.tsx": {
-    "mtime": 1780291189.673589,
-    "hash": "fb384979d6c15c51d7bd0dc3fea8c5b1"
+    "mtime": 1780314982.5397885,
+    "hash": "9629cb7fe0c311c3c91fb9eb6761cb99"
   },
   "E:\\yashi_electronics\\frontend\\src\\components\\common\\ApiHealthStatus.tsx": {
     "mtime": 1780295433.870723,
@@ -352,8 +352,8 @@
     "hash": "3cd10c8cee41634904137f665ac4f9db"
   },
   "E:\\yashi_electronics\\frontend\\src\\components\\product\\ProductCard.tsx": {
-    "mtime": 1780313521.830451,
-    "hash": "c262b0946cb63c593b0e15d26f36c22c"
+    "mtime": 1780313785.1646492,
+    "hash": "9c45ebd72bfa56aa0d74bb370930bb4a"
   },
   "E:\\yashi_electronics\\frontend\\src\\components\\ui\\Badge.tsx": {
     "mtime": 1780291666.0450835,
@@ -568,16 +568,16 @@
     "hash": "c2fdf1ae8c2992b109df43ec0dcfab55"
   },
   "E:\\yashi_electronics\\frontend\\src\\pages\\OrdersPage.tsx": {
-    "mtime": 1780295406.9365344,
-    "hash": "91dea395ad181c98fc2abe4815b4d24d"
+    "mtime": 1780316008.3024065,
+    "hash": "715590ac82aea5ad6f1b87af9bf900a2"
   },
   "E:\\yashi_electronics\\frontend\\src\\pages\\PaymentPage.tsx": {
     "mtime": 1780291903.1273944,
     "hash": "236787531ef74a558d4c6f82bb1a34da"
   },
   "E:\\yashi_electronics\\frontend\\src\\pages\\ProductDetailPage.tsx": {
-    "mtime": 1780295410.872044,
-    "hash": "ece54abdaa4e87bbad50005b53234854"
+    "mtime": 1780314700.2152855,
+    "hash": "4644436c920276bab1a9744ef2403dd6"
   },
   "E:\\yashi_electronics\\frontend\\src\\pages\\ProductsPage.tsx": {
     "mtime": 1780313299.308525,
@@ -592,8 +592,8 @@
     "hash": "5179f5202961a5b0ba5d9d4a9678bc44"
   },
   "E:\\yashi_electronics\\frontend\\src\\pages\\WishlistPage.tsx": {
-    "mtime": 1780313352.586028,
-    "hash": "043d38a1017ea88ae156cc868a0a6ad1"
+    "mtime": 1780316652.6154404,
+    "hash": "dbb2db6b8ff56dec8630b7b7a0334f7d"
   },
   "E:\\yashi_electronics\\frontend\\src\\routes\\AppRouter.tsx": {
     "mtime": 1780291896.2189736,
